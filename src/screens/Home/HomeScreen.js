@@ -25,8 +25,8 @@ import BottomNavigation from "../../components/BottomNavigation";
 function HomeScreen({navigation}) {
   const [categoryIndex, setCategoryIndex] = useState(0);
 
-  const [categoryLoaded, setCategoryLoaded] = useState(false);
-  const [cardsLoaded, setCardsLoaded] = useState(false);
+  const [categoryLoaded, setCategoryLoaded] = useState(true);
+  const [cardsLoaded, setCardsLoaded] = useState(true);
 
   useState(() => {
     setTimeout(() => {
@@ -106,7 +106,7 @@ function HomeScreen({navigation}) {
                 columnGap: 10,
               }}
               data={PLANTDATA}
-              renderItem={({ item }) => <ItemCard value={item} />}
+              renderItem={({ item }) => <ItemCard navigation={navigation} value={item} />}
               keyExtractor={(item) => item.id}
               numColumns={2}
               initialNumToRender={2}

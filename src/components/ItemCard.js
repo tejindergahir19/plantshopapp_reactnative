@@ -5,10 +5,12 @@ import COLORS from "../constant/COLORS";
 import Icon from "react-native-vector-icons/Ionicons";
 
 function ItemCard(props) {
-  const { value } = props;
+  const { value,navigation} = props;
 
   return (
-    <TouchableOpacity style={styles.itemCard}>
+    <TouchableOpacity onPress={() => {
+      navigation.navigate("Detail",value);
+  }}  style={styles.itemCard}>
         <View style={styles.addToWishlist}>
           <TouchableOpacity>
             <Icon name="heart-outline" color={COLORS.red} size={24} />

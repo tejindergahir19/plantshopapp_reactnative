@@ -7,7 +7,8 @@ const COLORS = {
     white:"white",
     secondary:"#76974a",
     grey:"#F1F1F1",
-    red:"red"
+    red:"red",
+    golden:"#EDA800"
 }
 
 export default COLORS;
