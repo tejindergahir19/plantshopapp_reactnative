@@ -16,14 +16,14 @@ export default function App() {
       <StatusBar animated={true} backgroundColor={COLORS.primary} />
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Home", headerShown: false }}
-        />
-        <Stack.Screen
           name="Welcome"
           component={WelcomeScreen}
           options={{ title: "Welcome", headerShown: false }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: "Home", headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

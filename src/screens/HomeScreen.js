@@ -74,7 +74,10 @@ function HomeScreen() {
           data={PLANTDATA}
           renderItem={({ item }) => <ItemCard value={item} />}
           keyExtractor={(item) => item.id}
+          
           numColumns={2}
+
+          initialNumToRender={2}
         />
       </View>
     </SafeAreaView>

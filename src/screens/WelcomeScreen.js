@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Animated,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -15,31 +15,13 @@ import COLORS from "../constant/COLORS";
 const image = require("../assets/plant1.png");
 
 function WelcomeScreen({ navigation }) {
-  const width = new Animated.Value(0);
-  const height = new Animated.Value(0);
-
-  useEffect(() => {
-    Animated.timing(
-      width, // The animated value to drive
-      {
-        toValue: 350, // Animate to opacity: 1 (opaque)
-        duration: 600, // Make it take a while
-        useNativeDriver: false,
-      }
-    ).start(); // Starts the animation
-    Animated.timing(height, {
-      toValue: 350,
-      duration: 600,
-      useNativeDriver: false,
-    }).start();
-  }, []);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
       <View style={styles.welcomeImg}>
-        <Animated.Image
+        <Image
           source={image}
-          style={{ width: width, height: height }}
+          style={{ width: 350, height: 350}}
         />
         <View style={styles.welcomeHeading}>
           <Text style={styles.welcomeHeadingText}>Enjoy your</Text>
