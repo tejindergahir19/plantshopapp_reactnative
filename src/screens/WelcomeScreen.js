@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import {
   Text,
   View,
-  Pressable,
   StyleSheet,
   TouchableOpacity,
   Animated,
@@ -13,7 +12,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 import COLORS from "../constant/COLORS";
 
-const images = require("../assets/plant1.png");
+const image = require("../assets/plant1.png");
 
 function WelcomeScreen({ navigation }) {
   const width = new Animated.Value(0);
@@ -28,21 +27,18 @@ function WelcomeScreen({ navigation }) {
         useNativeDriver: false,
       }
     ).start(); // Starts the animation
-    Animated.timing(
-      height, // The animated value to drive
-      {
-        toValue: 350, // Animate to opacity: 1 (opaque)
-        duration: 600, // Make it take a while
-        useNativeDriver: false,
-      }
-    ).start(); // Starts the animation
+    Animated.timing(height, {
+      toValue: 350,
+      duration: 600,
+      useNativeDriver: false,
+    }).start();
   }, []);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
       <View style={styles.welcomeImg}>
         <Animated.Image
-          source={images}
+          source={image}
           style={{ width: width, height: height }}
         />
         <View style={styles.welcomeHeading}>
@@ -62,7 +58,12 @@ function WelcomeScreen({ navigation }) {
       </View>
 
       <View style={styles.nextButtonView}>
-        <TouchableOpacity style={styles.nextButton}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Home", { name: "Home" });
+          }}
+          style={styles.nextButton}
+        >
           <Text style={styles.nextButtonText}>
             <Icon name={"arrow-forward"} size={42} />
           </Text>
@@ -74,9 +75,8 @@ function WelcomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   defaults: {
-    backgroundColor: COLORS.secondaryBackgroundColor,
+    backgroundColor: COLORS.primaryBackgroundColor,
     padding: 30,
-    justifyContent: "space-between",
   },
   welcomeImg: {
     marginTop: 50,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   welcomeHeading: {
-    marginTop: 30,
+    marginTop: 50,
   },
   welcomeHeadingText: {
     color: COLORS.black,
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   nextButtonView: {
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 60,
   },
   nextButton: {
     backgroundColor: COLORS.primary,
