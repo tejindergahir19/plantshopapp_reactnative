@@ -16,7 +16,7 @@ function WelcomeScreen({ navigation }) {
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
       <View>
         <TouchableOpacity>
-            <Text><Icon name="arrow-forward" color={COLORS.caption} size={20} /></Text>
+            <Text><Icon name="cart" color={COLORS.caption} size={20} /></Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
