@@ -168,7 +168,7 @@ const PLANTDATA = [
     "height": 27,
     "humidity": 64,
     "waterEvery": "7 hr",
-    "unit": 1190,
+    "unit": 3,
     "rating": 1
   },
   {
@@ -184,7 +184,7 @@ const PLANTDATA = [
     "height": 26,
     "humidity": 71,
     "waterEvery": "7 hr",
-    "unit": 496,
+    "unit": 5,
     "rating": 3
   },
   {

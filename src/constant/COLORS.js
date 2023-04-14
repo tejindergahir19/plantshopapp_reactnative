@@ -8,7 +8,8 @@ const COLORS = {
     secondary:"#76974a",
     grey:"#F1F1F1",
     red:"red",
-    golden:"#EDA800"
+    golden:"#EDA800",
+    orange:"orange"
 }
 
 export default COLORS;

@@ -50,11 +50,11 @@ function DetailScreen({ navigation, route }) {
         </View>
       </View>
       <View style={[styles.category, styles.iosPadding]}>
-          <View style = {styles.categoryButton}>
-            <Text style = {styles.categoryButtonText}>{value.category}</Text>
-          </View>
+        <View style={styles.categoryButton}>
+          <Text style={styles.categoryButtonText}>{value.category}</Text>
+        </View>
       </View>
-      
+
       <View style={styles.itemImage}>
         <Image
           style={{
@@ -71,7 +71,21 @@ function DetailScreen({ navigation, route }) {
         </Text>
       </View>
       <View style={[styles.subHeader, styles.iosPadding]}>
-            <Text style={styles.availableText}>Available: {value.unit}</Text>
+        <Text
+          style={[
+            styles.availableText,
+            {
+              color:
+                value.unit > 10
+                  ? COLORS.black
+                  : value.unit > 3
+                  ? COLORS.orange
+                  : COLORS.red,
+            },
+          ]}
+        >
+          Available: {value.unit}
+        </Text>
       </View>
       <View style={[styles.desc, styles.iosPadding]}>
         <Text style={styles.descText}>
@@ -99,7 +113,9 @@ function DetailScreen({ navigation, route }) {
       <View style={[styles.bottomSection, styles.iosPadding]}>
         <View style={styles.aboutCard}>
           <Text style={styles.aboutTitle}>Price</Text>
-          <Text style={styles.priceValue}>{value.price} {value.currency}</Text>
+          <Text style={styles.priceValue}>
+            {value.price} {value.currency}
+          </Text>
         </View>
         <View style={styles.aboutCard}>
           <TouchableOpacity style={styles.addToCartButton}>
@@ -129,22 +145,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  category:{
-    flexDirection:"row",
-    justifyContent:"flex-end",
-    marginTop:25
+  category: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    marginTop: 25,
   },
-  categoryButton:{
-    backgroundColor:COLORS.primary,
-    paddingVertical:6,
-    paddingHorizontal:8,
-    borderRadius:6
+  categoryButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 6,
   },
-  categoryButtonText:{
-    color:COLORS.primaryBackgroundColor,
-    textTransform:"uppercase",
-    fontSize:12,
-    fontWeight:"bold"
+  categoryButtonText: {
+    color: COLORS.primaryBackgroundColor,
+    textTransform: "uppercase",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   itemImage: {
     justifyContent: "center",
@@ -157,10 +173,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 15,
   },
-  availableText:{
-    marginTop:2,
-    color:COLORS.black,
-    fontWeight:"bold"
+  availableText: {
+    marginTop: 2,
+    fontWeight: "bold",
   },
   itemTitleText: {
     color: COLORS.primary,
@@ -202,30 +217,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
   },
-  bottomSection:{
-    marginTop:28,
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center"
+  bottomSection: {
+    marginTop: 28,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  priceValue:{
+  priceValue: {
     color: COLORS.primary,
     textTransform: "capitalize",
     fontWeight: "bold",
     fontSize: 28,
     marginTop: 3,
   },
-  addToCartButton:{
-    backgroundColor:COLORS.primary,
-    paddingHorizontal:30,
-    paddingVertical:15,
-    borderRadius:6
+  addToCartButton: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 6,
   },
-  addToCartText:{
-    fontWeight:"bold",
-    fontSize:18,
-    color:COLORS.primaryBackgroundColor
-  }
+  addToCartText: {
+    fontWeight: "bold",
+    fontSize: 18,
+    color: COLORS.primaryBackgroundColor,
+  },
 });
 
 export default DetailScreen;
