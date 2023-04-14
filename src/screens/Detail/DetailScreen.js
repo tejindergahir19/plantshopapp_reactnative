@@ -39,7 +39,7 @@ function DetailScreen({ navigation, route }) {
             width: 350,
             height: 350,
           }}
-          source={require("../../assets/plant1.png")}
+          source={require("../../assets/plant4.png")}
         />
       </View>
       <View style={styles.itemTitle}>

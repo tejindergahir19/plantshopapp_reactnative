@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   bottomNavigation: {
     justifyContent: "space-between",
     flexDirection: "row",
-    padding: 5,
+    padding: 5
   },
   bottomNavigationIcon: {
     color: COLORS.primary,
