@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const Rating = (props) => {
   const { num } = props;
@@ -48,6 +49,12 @@ function DetailScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </View>
+      <View style={[styles.category, styles.iosPadding]}>
+          <View style = {styles.categoryButton}>
+            <Text style = {styles.categoryButtonText}>{value.category}</Text>
+          </View>
+      </View>
+      
       <View style={styles.itemImage}>
         <Image
           style={{
@@ -62,6 +69,9 @@ function DetailScreen({ navigation, route }) {
         <Text style={styles.review}>
           <Rating num={value.rating} />
         </Text>
+      </View>
+      <View style={[styles.subHeader, styles.iosPadding]}>
+            <Text style={styles.availableText}>Available: {value.unit}</Text>
       </View>
       <View style={[styles.desc, styles.iosPadding]}>
         <Text style={styles.descText}>
@@ -119,16 +129,38 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
+  category:{
+    flexDirection:"row",
+    justifyContent:"flex-end",
+    marginTop:25
+  },
+  categoryButton:{
+    backgroundColor:COLORS.primary,
+    paddingVertical:6,
+    paddingHorizontal:8,
+    borderRadius:6
+  },
+  categoryButtonText:{
+    color:COLORS.primaryBackgroundColor,
+    textTransform:"uppercase",
+    fontSize:12,
+    fontWeight:"bold"
+  },
   itemImage: {
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 50,
+    paddingTop: 2,
   },
   itemTitle: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 15,
+  },
+  availableText:{
+    marginTop:2,
+    color:COLORS.black,
+    fontWeight:"bold"
   },
   itemTitleText: {
     color: COLORS.primary,
@@ -145,7 +177,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   desc: {
-    marginTop: 12,
+    marginTop: 8,
   },
   descText: {
     fontSize: 16,
@@ -156,7 +188,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 18,
   },
   aboutTitle: {
     color: COLORS.caption,
@@ -171,7 +203,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   bottomSection:{
-    marginTop:30,
+    marginTop:28,
     flexDirection:"row",
     justifyContent:"space-between",
     alignItems:"center"
