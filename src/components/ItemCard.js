@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     textTransform: "capitalize",
-    marginTop:20
+    marginTop:20,
+    color:COLORS.black
   },
   footerItem:{
     marginTop:12,
