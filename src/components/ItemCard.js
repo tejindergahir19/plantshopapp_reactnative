@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, View, StyleSheet, Image } from "react-native";
+import { TouchableOpacity, Text, View, StyleSheet, Image, Platform } from "react-native";
 import COLORS from "../constant/COLORS";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -12,9 +12,15 @@ function ItemCard(props) {
       navigation.navigate("Detail",value);
   }}  style={styles.itemCard}>
         <View style={styles.addToWishlist}>
+        
           <TouchableOpacity>
             <Icon name="heart-outline" color={COLORS.red} size={24} />
           </TouchableOpacity>
+          {
+            (value.unit <= 5 && value.unit > 0) && 
+            <Text style={styles.stockLeft}>Hurry Only {value.unit} left !</Text>
+          }
+          
         </View>
         <View style={styles.itemImg}>
           <Image
@@ -51,8 +57,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginBottom:10
   },
+  stockLeft:{
+    color:COLORS.red,
+    fontSize:Platform.OS == "ios" ? 11 : 10,
+    fontWeight:"bold"
+  },
   addToWishlist: {
-    alignItems: "flex-end",
+    alignItems: "center",
+    flexDirection:"row-reverse",
+    justifyContent:"space-between"
   },
   itemImg: {
     justifyContent: "center",

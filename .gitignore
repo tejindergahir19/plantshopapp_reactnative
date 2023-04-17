@@ -1,1 +1,3 @@
 /node_modules
+
+/src/firebase/index.js

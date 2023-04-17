@@ -12,7 +12,6 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const Rating = (props) => {
   const { num } = props;
@@ -45,11 +44,16 @@ function DetailScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>Details</Text>
         <View>
           <TouchableOpacity>
-            <Icon name="heart-outline" color={COLORS.red} size={30} />
+            <Icon name="heart-outline" color={COLORS.primaryBackgroundColor} size={24} />
           </TouchableOpacity>
         </View>
       </View>
       <View style={[styles.category, styles.iosPadding]}>
+        <View>
+          <TouchableOpacity>
+            <Icon name="heart-outline" color={COLORS.red} size={24} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.categoryButton}>
           <Text style={styles.categoryButtonText}>{value.category}</Text>
         </View>
@@ -146,8 +150,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   category: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
+    flexDirection: "row-reverse",
+    justifyContent: "space-between",
     marginTop: 25,
   },
   categoryButton: {
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
   },
   availableText: {
     marginTop: 2,
-    fontWeight: "bold",
+    // fontWeight: "bold",
   },
   itemTitleText: {
     color: COLORS.primary,

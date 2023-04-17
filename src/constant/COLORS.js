@@ -9,7 +9,7 @@ const COLORS = {
     grey:"#F1F1F1",
     red:"red",
     golden:"#EDA800",
-    orange:"orange"
+    orange:"#ff6600"
 }
 
 export default COLORS;

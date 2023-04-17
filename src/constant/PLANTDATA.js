@@ -1,159 +1,3 @@
-// const PLANTDATA = [
-//   {
-//     id: 1,
-//     title: "agertum plant",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 390,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant1.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 2,
-//     title: "Monstera",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 400,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant4.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 3,
-//     title: "agertum plant",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 390,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant1.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 4,
-//     title: "Monstera",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 400,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant4.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 5,
-//     title: "agertum plant",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 390,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant1.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 6,
-//     title: "Monstera",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 400,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant4.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 7,
-//     title: "agertum plant",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 390,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant1.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 8,
-//     title: "Monstera",
-//     description:
-//       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-//     price: 400,
-//     currency: "₹",
-//     category: "organic",
-//     img: "plant4.png",
-
-//     size: "medium",
-//     plantType: "Orchid",
-//     height: "12.6",
-//     humidity: 82,
-
-//     waterEvery: "6 hr",
-//     unit: 100,
-//     rating: 4.8,
-//   },
-
-// ];
-
 const PLANTDATA = [
   {
     "id": 238,
@@ -216,7 +60,7 @@ const PLANTDATA = [
     "height": 6,
     "humidity": 89,
     "waterEvery": "21 hr",
-    "unit": 760,
+    "unit": 8,
     "rating": 2
   },
   {
@@ -248,7 +92,7 @@ const PLANTDATA = [
     "height": 8,
     "humidity": 68,
     "waterEvery": "24 hr",
-    "unit": 1143,
+    "unit": 3,
     "rating": 1
   },
   {
@@ -264,7 +108,7 @@ const PLANTDATA = [
     "height": 14,
     "humidity": 86,
     "waterEvery": "23 hr",
-    "unit": 1357,
+    "unit": 5,
     "rating": 2
   },
   {
@@ -280,7 +124,7 @@ const PLANTDATA = [
     "height": 25,
     "humidity": 92,
     "waterEvery": "12 hr",
-    "unit": 268,
+    "unit": 7,
     "rating": 5
   },
   {
@@ -312,7 +156,7 @@ const PLANTDATA = [
     "height": 30,
     "humidity": 95,
     "waterEvery": "19 hr",
-    "unit": 445,
+    "unit": 12,
     "rating": 2
   },
   {
