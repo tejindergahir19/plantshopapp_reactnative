@@ -12,24 +12,52 @@ import AlarmScreen from "./src/screens/Alarm/AlarmScreen";
 import AccountScreen from "./src/screens/Account/AccountScreen";
 import CartScreen from "./src/screens/Cart/CartScreen";
 import DetailScreen from "./src/screens/Detail/DetailScreen";
-import BottomNavigation from "./src/components/BottomNavigation";
+
+import { app, db } from "./src/firebase";
+import { collection, doc, getDocs } from "firebase/firestore";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // const addCategories = async () => {
+  //   try {
+  //     const docRef = await addDoc(collection(db, "tbl_categories"),
+  //       {
+  //         category:"b"
+  //       });
+
+  //     console.log("Document written withID : ", docRef.id);
+  //   } catch (e) {
+  //     console.log("Error adding document: ", e);
+  //   }
+  // };
+
+  // const getCategories = async () => {
+  //   try {
+  //     const querySnapshot = await getDocs(collection(db,"tbl_categories"));
+
+  //     querySnapshot.forEach((doc) => {
+  //       console.log(doc.id,doc.data().category);
+  //     })
+  //   } catch (e) {
+  //     console.log("error fetching data",e);
+  //   }
+  // };
+
+  // React.useEffect(()=>{
+  //   getCategories();
+  // })
+
   return (
     <NavigationContainer>
       <StatusBar animated={true} backgroundColor={COLORS.primary} />
       <Stack.Navigator>
-        
-      
-
-<Stack.Screen
+        <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{ title: "Home", headerShown: false }}
         />
-          <Stack.Screen
+        <Stack.Screen
           name="Welcome"
           component={WelcomeScreen}
           options={{ title: "Welcome", headerShown: false }}

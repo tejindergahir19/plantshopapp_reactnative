@@ -22,19 +22,35 @@ import HomeScreenItemLoader from "../../loaders/HomeScreenItemLoader";
 import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
-function HomeScreen({navigation}) {
+import {db} from "../../firebase";
+import { collection,getDocs } from "firebase/firestore";
+
+function HomeScreen({ navigation }) {
   const [categoryIndex, setCategoryIndex] = useState(0);
 
-  const [categoryLoaded, setCategoryLoaded] = useState(true);
+  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
+  const [categoryData, setCategoryData] = useState(null);
+
   const [cardsLoaded, setCardsLoaded] = useState(true);
 
+  const fetchCategoryData = async () => {
+    let tmpData = [];
+    try {
+      const querySnapshot = await getDocs(collection(db, "tbl_categories"));
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data().category);
+        // console.log(doc.id, doc.data().category);
+      });
+    } catch (e) {
+      console.log("error fetching data", e);
+    }
+
+    setCategoryData(tmpData);
+    setIsCategoryLoaded(true);
+  };
+
   useState(() => {
-    setTimeout(() => {
-      setCategoryLoaded(true);
-    }, 2000);
-    setTimeout(() => {
-      setCardsLoaded(true);
-    }, 5000);
+    fetchCategoryData();
   });
 
   return (
@@ -45,12 +61,13 @@ function HomeScreen({navigation}) {
           <Text style={styles.Heading}>Plant Shop</Text>
         </View>
         <View style={styles.cart}>
-        <TouchableOpacity onPress={() => {
-            navigation.navigate("Cart", { name: "Cart" });
-          }}>
-    <Icon name="shopping-cart" size={32} color={COLORS.primary}/>
-        
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Cart", { name: "Cart" });
+            }}
+          >
+            <Icon name="shopping-cart" size={32} color={COLORS.primary} />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.search}>
@@ -64,10 +81,10 @@ function HomeScreen({navigation}) {
           />
         </View>
       </View>
-      {categoryLoaded ? (
+      {isCategoryLoaded ? (
         <View style={styles.categories}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {CATEGORIES.map((item, index) => (
+            {categoryData?.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
@@ -106,7 +123,9 @@ function HomeScreen({navigation}) {
                 columnGap: 10,
               }}
               data={PLANTDATA}
-              renderItem={({ item }) => <ItemCard navigation={navigation} value={item} />}
+              renderItem={({ item }) => (
+                <ItemCard navigation={navigation} value={item} />
+              )}
               keyExtractor={(item) => item.id}
               numColumns={2}
               initialNumToRender={2}
@@ -128,10 +147,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryBackgroundColor,
     padding: 20,
   },
-  header:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center"
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   subHeading: {
     fontSize: 24,
