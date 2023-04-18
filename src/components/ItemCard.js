@@ -8,7 +8,7 @@ function ItemCard(props) {
   const { value,navigation} = props;
 
   return (
-    <TouchableOpacity onPress={() => {
+    <TouchableOpacity key={Math.random()} onPress={() => {
       navigation.navigate("Detail",value);
   }}  style={styles.itemCard}>
         <View style={styles.addToWishlist}>
@@ -30,7 +30,7 @@ function ItemCard(props) {
         </View>
 
         <Text style={styles.title}>
-          {value?.title.length > 24
+          {value?.title?.length > 24
             ? value.title.slice(0, 24) + "..."
             : value.title}
         </Text>

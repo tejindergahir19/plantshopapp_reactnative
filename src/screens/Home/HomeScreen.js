@@ -22,8 +22,8 @@ import HomeScreenItemLoader from "../../loaders/HomeScreenItemLoader";
 import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import {db} from "../../firebase";
-import { collection,getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 function HomeScreen({ navigation }) {
   const [categoryIndex, setCategoryIndex] = useState(0);
@@ -31,7 +31,8 @@ function HomeScreen({ navigation }) {
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
 
-  const [cardsLoaded, setCardsLoaded] = useState(true);
+  const [isCardsLoaded, setIsCardsLoaded] = useState(false);
+  const [plantData, setPlantData] = useState(null);
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -39,7 +40,6 @@ function HomeScreen({ navigation }) {
       const querySnapshot = await getDocs(collection(db, "tbl_categories"));
       querySnapshot.forEach((doc) => {
         tmpData.push(doc.data().category);
-        // console.log(doc.id, doc.data().category);
       });
     } catch (e) {
       console.log("error fetching data", e);
@@ -47,6 +47,26 @@ function HomeScreen({ navigation }) {
 
     setCategoryData(tmpData);
     setIsCategoryLoaded(true);
+
+    fetchPlantData();
+  };
+
+  const fetchPlantData = async () => {
+    let tmpData = [];
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "tbl_plant_data"));
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data());
+      });
+    } catch (e) {
+      console.log("error fetching data");
+    }
+
+    setPlantData(tmpData);
+    setIsCardsLoaded(true);
+
+    console.log(tmpData);
   };
 
   useState(() => {
@@ -114,7 +134,7 @@ function HomeScreen({ navigation }) {
           <HomeScreenCategoryLoader />
         </View>
       )}
-      {cardsLoaded ? (
+      {isCardsLoaded ? (
         <>
           <View style={{ flex: 1, paddingVertical: 20 }}>
             <FlatList
@@ -122,7 +142,7 @@ function HomeScreen({ navigation }) {
               columnWrapperStyle={{
                 columnGap: 10,
               }}
-              data={PLANTDATA}
+              data={plantData}
               renderItem={({ item }) => (
                 <ItemCard navigation={navigation} value={item} />
               )}
