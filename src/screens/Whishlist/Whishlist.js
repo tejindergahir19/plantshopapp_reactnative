@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -15,6 +15,7 @@ import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
 import PLANTDATA from "../../constant/PLANTDATA";
 import WishlistCard from "../../components/WishlistCard";
+import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 
 function DetailScreen({ navigation, route }) {
   const value = route.params;
@@ -29,7 +30,7 @@ function DetailScreen({ navigation, route }) {
         >
           <Icon name="arrow-back" size={32} color={COLORS.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Whishlist</Text>
+        <Text style={styles.headerTitle}>Wishlist</Text>
         <View>
           <TouchableOpacity>
             <Icon
@@ -41,18 +42,22 @@ function DetailScreen({ navigation, route }) {
         </View>
       </View>
 
-      <View style={[{ flex: 1, paddingVertical: 20 },styles.iosPadding]}>
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={PLANTDATA}
-          renderItem={({ item }) => (
-            <WishlistCard navigation={navigation} value={item} />
-          )}
-        />
+      <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
+        {true ? (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={PLANTDATA}
+            renderItem={({ item }) => (
+              <WishlistCard navigation={navigation} value={item} />
+            )}
+          />
+        ) : (
+          <WhishlistScreenLoader />
+        )}
       </View>
 
       <View style={styles.iosPadding}>
-      <BottomNavigation navigation={navigation} screen="wishlist" />
+        <BottomNavigation navigation={navigation} screen="wishlist" />
       </View>
     </SafeAreaView>
   );
