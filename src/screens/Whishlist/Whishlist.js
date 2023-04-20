@@ -41,7 +41,7 @@ function DetailScreen({ navigation, route }) {
         </View>
       </View>
 
-      <View style={{ flex: 1, paddingVertical: 20 }}>
+      <View style={[{ flex: 1, paddingVertical: 20 },styles.iosPadding]}>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={PLANTDATA}
@@ -51,7 +51,9 @@ function DetailScreen({ navigation, route }) {
         />
       </View>
 
+      <View style={styles.iosPadding}>
       <BottomNavigation navigation={navigation} screen="wishlist" />
+      </View>
     </SafeAreaView>
   );
 }

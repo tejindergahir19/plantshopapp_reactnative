@@ -6,7 +6,7 @@ import ContentLoader, {Rect} from 'react-content-loader/native'
 function HomeScreenItemLoader(){
     return (
        
-        <ContentLoader speed={0.5}>
+        <ContentLoader speed={0.35}>
           <Rect x="10" y="17" rx="4" ry="4" width="160" height="120" />
           <Rect x="180" y="17" rx="4" ry="4" width="160" height="120" />
           <Rect x="10" y="145" rx="4" ry="4" width="160" height="15" />

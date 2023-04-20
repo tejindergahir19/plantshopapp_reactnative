@@ -7,9 +7,12 @@ import { app, db } from "../../firebase";
 import { collection, doc, addDoc} from "firebase/firestore";
 
 function AccountScreen() {
-  const saveData = async (data) => {
+  const saveData = async (data,count) => {
+
+
     try {
       const docRef = await addDoc(collection(db, "tbl_plant_data"), {
+        id:count,
         title: data.title,
         description: data.description,
         price: data.price,
@@ -32,7 +35,8 @@ function AccountScreen() {
   };
 
   const startAdding = () => {
-    PLANTDATA.map((item) => saveData(item));
+    let count = 0;
+    PLANTDATA.map((item) => saveData(item,count++))      
   };
 
   return (

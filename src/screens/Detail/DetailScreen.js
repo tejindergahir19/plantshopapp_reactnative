@@ -13,6 +13,9 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
 
+import DetailScreenLoader from "../../loaders/DetailScreenLoader"
+
+
 const Rating = (props) => {
   const { num } = props;
 
@@ -44,89 +47,103 @@ function DetailScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>Details</Text>
         <View>
           <TouchableOpacity>
-            <Icon name="heart-outline" color={COLORS.primaryBackgroundColor} size={24} />
+            <Icon
+              name="heart-outline"
+              color={COLORS.primaryBackgroundColor}
+              size={24}
+            />
           </TouchableOpacity>
         </View>
       </View>
-      <View style={[styles.category, styles.iosPadding]}>
-        <View>
-          <TouchableOpacity>
-            <Icon name="heart-outline" color={COLORS.red} size={24} />
-          </TouchableOpacity>
+      {
+        false ? 
+        (
+          <View style={{flex:1}}>
+        <View style={[styles.category, styles.iosPadding]}>
+          <View>
+            <TouchableOpacity>
+              <Icon name="heart-outline" color={COLORS.red} size={24} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.categoryButton}>
+            <Text style={styles.categoryButtonText}>{value.category}</Text>
+          </View>
         </View>
-        <View style={styles.categoryButton}>
-          <Text style={styles.categoryButtonText}>{value.category}</Text>
-        </View>
-      </View>
 
-      <View style={styles.itemImage}>
-        <Image
-          style={{
-            width: 350,
-            height: 350,
-          }}
-          source={require("../../assets/plant4.png")}
-        />
-      </View>
-      <View style={[styles.itemTitle, styles.iosPadding]}>
-        <Text style={styles.itemTitleText}>{value.title}</Text>
-        <Text style={styles.review}>
-          <Rating num={value.rating} />
-        </Text>
-      </View>
-      <View style={[styles.subHeader, styles.iosPadding]}>
-        <Text
-          style={[
-            styles.availableText,
-            {
-              color:
-                value.unit > 10
-                  ? COLORS.black
-                  : value.unit > 3
-                  ? COLORS.orange
-                  : COLORS.red,
-            },
-          ]}
-        >
-          Available: {value.unit}
-        </Text>
-      </View>
-      <View style={[styles.desc, styles.iosPadding]}>
-        <Text style={styles.descText}>
-          {value.description.slice(0, 180) + "..."}
-        </Text>
-      </View>
-      <View style={[styles.about, styles.iosPadding]}>
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>Size</Text>
-          <Text style={styles.aboutValue}>{value.size}</Text>
+        <View style={styles.itemImage}>
+          <Image
+            style={{
+              width: 350,
+              height: 350,
+            }}
+            source={require("../../assets/plant4.png")}
+          />
         </View>
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>Plant</Text>
-          <Text style={styles.aboutValue}>{value.plantType}</Text>
-        </View>
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>Height</Text>
-          <Text style={styles.aboutValue}>{value.height}"</Text>
-        </View>
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>Humidity</Text>
-          <Text style={styles.aboutValue}>{value.humidity}%</Text>
-        </View>
-      </View>
-      <View style={[styles.bottomSection, styles.iosPadding]}>
-        <View style={styles.aboutCard}>
-          <Text style={styles.aboutTitle}>Price</Text>
-          <Text style={styles.priceValue}>
-            {value.price} {value.currency}
+        <View style={[styles.itemTitle, styles.iosPadding]}>
+          <Text style={styles.itemTitleText}>{value.title}</Text>
+          <Text style={styles.review}>
+            <Rating num={value.rating} />
           </Text>
         </View>
-        <View style={styles.aboutCard}>
-          <TouchableOpacity style={styles.addToCartButton}>
-            <Text style={styles.addToCartText}>Add to cart</Text>
-          </TouchableOpacity>
+        <View style={[styles.subHeader, styles.iosPadding]}>
+          <Text
+            style={[
+              styles.availableText,
+              {
+                color:
+                  value.unit > 10
+                    ? COLORS.black
+                    : value.unit > 3
+                    ? COLORS.orange
+                    : COLORS.red,
+              },
+            ]}
+          >
+            Available: {value.unit}
+          </Text>
+        </View>
+        <View style={[styles.desc, styles.iosPadding]}>
+          <Text style={styles.descText}>
+            {value.description.slice(0, 180) + "..."}
+          </Text>
+        </View>
+        <View style={[styles.about, styles.iosPadding]}>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutTitle}>Size</Text>
+            <Text style={styles.aboutValue}>{value.size}</Text>
+          </View>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutTitle}>Plant</Text>
+            <Text style={styles.aboutValue}>{value.plantType}</Text>
+          </View>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutTitle}>Height</Text>
+            <Text style={styles.aboutValue}>{value.height}"</Text>
+          </View>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutTitle}>Humidity</Text>
+            <Text style={styles.aboutValue}>{value.humidity}%</Text>
+          </View>
+        </View>
+        <View style={[styles.bottomSection, styles.iosPadding]}>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutTitle}>Price</Text>
+            <Text style={styles.priceValue}>
+              {value.price} {value.currency}
+            </Text>
+          </View>
+          <View style={styles.aboutCard}>
+            <TouchableOpacity style={styles.addToCartButton}>
+              <Text style={styles.addToCartText}>Add to cart</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+        ) : 
+        <View style={{paddingHorizontal:Platform.OS == "ios" ? 20 : 0}}>
+        <DetailScreenLoader />
+        </View>
+      }
     </SafeAreaView>
   );
 }

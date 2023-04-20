@@ -22,8 +22,8 @@ import HomeScreenItemLoader from "../../loaders/HomeScreenItemLoader";
 import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import {db} from "../../firebase";
+import { collection,getDocs } from "firebase/firestore";
 
 function HomeScreen({ navigation }) {
   const [categoryIndex, setCategoryIndex] = useState(0);
@@ -32,7 +32,7 @@ function HomeScreen({ navigation }) {
   const [categoryData, setCategoryData] = useState(null);
 
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
-  const [plantData, setPlantData] = useState(null);
+  const [plantData,setPlantData] = useState(null);
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -54,20 +54,20 @@ function HomeScreen({ navigation }) {
   const fetchPlantData = async () => {
     let tmpData = [];
 
-    try {
-      const querySnapshot = await getDocs(collection(db, "tbl_plant_data"));
+    try{
+      const querySnapshot = await getDocs(collection(db,"tbl_plant_data"));
       querySnapshot.forEach((doc) => {
         tmpData.push(doc.data());
       });
-    } catch (e) {
+    }catch(e){
       console.log("error fetching data");
     }
 
     setPlantData(tmpData);
     setIsCardsLoaded(true);
 
-    console.log(tmpData);
-  };
+    console.log(tmpData)
+  }
 
   useState(() => {
     fetchCategoryData();
