@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  KeyboardAvoidingView,
 } from "react-native";
 import COLORS from "../../constant/COLORS";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-function LoginScreen({ navigation }) {
+function SignupScreen({ navigation }) {
   const [keyboardStatus, setKeyboardStatus] = useState(false);
 
   useEffect(() => {
@@ -35,7 +34,15 @@ function LoginScreen({ navigation }) {
       style={{ flex: 1, backgroundColor: COLORS.primaryBackgroundColor }}
     >
       <View style={styles.defaults}>
-        <Text style={styles.login}>Login</Text>
+        <Text style={styles.login}>Signup</Text>
+        <View style={styles.nameInput}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Icon name="account" size={28} color={COLORS.primary} />
+          </View>
+          <View>
+            <TextInput style={{ height: 40, width: 270 }} placeholder="Name" />
+          </View>
+        </View>
 
         <View style={styles.emailInput}>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -63,23 +70,17 @@ function LoginScreen({ navigation }) {
           }}
           style={styles.loginButton}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+          <Text style={styles.loginButtonText}>Signup</Text>
         </TouchableOpacity>
-
-        {!keyboardStatus && (
-          <TouchableOpacity style={styles.forgotButton}>
-            <Text style={styles.forgotButtonText}>Forgot Password</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
       {!keyboardStatus && (
         <View style={styles.newUserButton}>
-          <Text style={styles.newUserHelpText}>Not a member?</Text>
+          <Text style={styles.newUserHelpText}>Already a member?</Text>
           <TouchableOpacity  onPress={() => {
-            navigation.navigate("Signup", { name: "Signup" });
+            navigation.navigate("Login", { name: "Login" });
           }}>
-            <Text style={styles.newUserButtonText}>Signup now</Text>
+            <Text style={styles.newUserButtonText}>Login</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     marginTop: 150,
   },
-  emailInput: {
+  nameInput:{
     backgroundColor: COLORS.grey,
     flexDirection: "row",
     alingItems: "center",
@@ -108,6 +109,16 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 6,
     marginTop: 40,
+  },
+  emailInput: {
+    backgroundColor: COLORS.grey,
+    flexDirection: "row",
+    alingItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    marginTop: 10,
   },
   pswInput: {
     backgroundColor: COLORS.grey,
@@ -163,4 +174,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignupScreen;
