@@ -1,17 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Keyboard,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import COLORS from "../../constant/COLORS";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 function LoginScreen({ navigation }) {
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: COLORS.primaryBackgroundColor }}
@@ -48,16 +66,21 @@ function LoginScreen({ navigation }) {
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.forgotButton}>
-          <Text style={styles.forgotButtonText}>Forgot Password</Text>
-        </TouchableOpacity>
+        {!keyboardStatus && (
+          <TouchableOpacity style={styles.forgotButton}>
+            <Text style={styles.forgotButtonText}>Forgot Password</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      <View style={styles.newUserButton}>
+
+      {!keyboardStatus && (
+        <View style={styles.newUserButton}>
           <Text style={styles.newUserHelpText}>Not a member?</Text>
           <TouchableOpacity>
             <Text style={styles.newUserButtonText}>Signup now</Text>
           </TouchableOpacity>
         </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -126,15 +149,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 50,
-  },newUserHelpText:{
-    marginRight:5,
-    color:COLORS.caption,
-    fontSize:16
   },
-  newUserButtonText:{
-    color:COLORS.primary,
-    fontSize:16,
-  }
+  newUserHelpText: {
+    marginRight: 5,
+    color: COLORS.caption,
+    fontSize: 16,
+  },
+  newUserButtonText: {
+    color: COLORS.primary,
+    fontSize: 16,
+  },
 });
 
 export default LoginScreen;

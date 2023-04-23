@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect} from "react";
 import {
   Text,
   StyleSheet,
@@ -68,9 +68,9 @@ function HomeScreen({ navigation }) {
     console.log(tmpData)
   }
 
-  useState(() => {
+  useEffect(() => {
     fetchCategoryData();
-  });
+  },[]);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
