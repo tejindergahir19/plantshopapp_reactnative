@@ -54,8 +54,26 @@ function CartScreen({navigation}) {
         )}
       </View>
 
-      <View style={styles.totalAmount}>
-          <Text>Hello</Text>
+      <View style={[styles.totalAmount,styles.iosPadding]}>
+         <View style={styles.subTotal}>
+            <Text style={styles.subTotalText}>Sub total</Text>
+            <Text style={styles.subTotalAmountText}>1080 $</Text>
+         </View>
+         <View style={styles.delivery}>
+            <Text style={styles.deliveryText}>Delivery</Text>
+            <Text style={styles.deliveryAmountText}>3 $</Text>
+         </View>
+          <View style={styles.total}>
+            <Text style={styles.totalText}>Total</Text>
+            <Text style={styles.totalAmountText}>1083 $</Text>
+          </View>
+
+          <TouchableOpacity style={styles.checkOutButton}>
+            <Text style={styles.checkOutButtonText}>
+              checkout
+            </Text>
+          </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
@@ -79,6 +97,75 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
+  totalAmount:{
+    paddingVertical:12
+  },
+  subTotal:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    paddingBottom:8,
+    borderBottomColor:COLORS.grey,
+    borderBottomWidth:Platform.OS == "ios" ? 1 : 2,
+    borderStyle:Platform.OS == "ios" ? "solid" : "dashed" 
+  },
+  subTotalText:{
+    color:COLORS.caption,
+    fontSize:16,
+  },
+  subTotalAmountText:{
+    color:COLORS.caption,
+    fontSize:16,
+    fontWeight:"bold"
+  },
+  delivery:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    paddingTop:8,
+  paddingBottom:18,
+    borderBottomColor:COLORS.grey,
+    borderBottomWidth:3
+  },
+  deliveryText:{
+    color:COLORS.caption,
+    fontSize:16,
+  },
+  deliveryAmountText:{
+    color:COLORS.caption,
+    fontSize:16,
+    fontWeight:"bold"
+  },
+  total:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    paddingTop:18
+  },
+  totalText:{
+    color:COLORS.caption,
+    fontSize:20,
+    fontWeight:"bold"
+  },
+  totalAmountText:{
+    color:COLORS.primary,
+    fontSize:22,
+    fontWeight:"bold"
+  },
+  checkOutButton:{
+    backgroundColor:COLORS.primary,
+    justifyContent:"center",
+    alignItems:"center",
+    paddingVertical:12,
+    borderRadius:6,
+    marginTop:24
+  },
+  checkOutButtonText:{
+    fontWeight: "bold",
+    fontSize: 18,
+    color: COLORS.primaryBackgroundColor,
+    textTransform:"capitalize"
+  }
 });
 
 export default CartScreen;

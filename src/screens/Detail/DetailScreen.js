@@ -56,7 +56,7 @@ function DetailScreen({ navigation, route }) {
         </View>
       </View>
       {
-        false ? 
+        true ? 
         (
           <View style={{flex:1}}>
         <View style={[styles.category, styles.iosPadding]}>
@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     color: COLORS.primaryBackgroundColor,
+    textTransform:"capitalize"
   },
 });
 
