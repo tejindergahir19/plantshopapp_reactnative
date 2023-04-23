@@ -7,13 +7,91 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import COLORS from "../../constant/COLORS";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { db } from "../../firebase";
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+
+const validateEmail = (email) => {
+  let emailRegEx = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+
+  return emailRegEx.test(email);
+};
+
+const validatePhone = (phone) => {
+  let phoneRegEx = /[0-9]{4}/;
+
+  return phoneRegEx.test(phone);
+};
+
 function SignupScreen({ navigation }) {
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+
+  const [activityIndicator, setActivityIndicator] = useState(false);
+
   const [keyboardStatus, setKeyboardStatus] = useState(false);
+
+  const [errorStatus, setErrorStatus] = useState("");
+
+  const addUser = async () => {
+    try {
+      setActivityIndicator(true);
+      const fields = [userName, userEmail, userPassword, userPhone];
+  
+      if (fields.every((field) => field)) {
+        const [emailIsValid, phoneIsValid] = await Promise.all([
+          validateEmail(userEmail),
+          validatePhone(userPhone),
+        ]);
+  
+        if (emailIsValid && phoneIsValid) {
+          const docId = [];
+  
+          const q = query(
+            collection(db, "tbl_customer"),
+            where("email", "==", userEmail),
+            where("phone", "==", userPhone)
+          );
+          const querySnapshot = await getDocs(q);
+  
+          querySnapshot.forEach((doc) => {
+            docId.push(doc.id);
+          });
+  
+          if (docId.length === 0) {
+            const docRef = await addDoc(collection(db, "tbl_customer"), {
+              name: userName,
+              email: userEmail,
+              password: userPassword,
+              phone: userPhone,
+              address: [],
+            });
+            console.log("Document written with ID: ", docRef.id);
+            navigation.navigate("Home", { name: "Home" });
+          } else {
+            setErrorStatus("User Already Exists!");
+          }
+        } else {
+          setErrorStatus(emailIsValid ? "Invalid Phone!" : "Invalid Email!");
+        }
+      } else {
+        setErrorStatus("All Fields Required!");
+      }
+    } catch (error) {
+      console.log("Error adding document: ", error);
+      setErrorStatus("Something Went Wrong!");
+    } finally {
+      setActivityIndicator(false);
+    }
+  };
+  
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -40,7 +118,11 @@ function SignupScreen({ navigation }) {
             <Icon name="account" size={28} color={COLORS.primary} />
           </View>
           <View>
-            <TextInput style={{ height: 40, width: 270 }} placeholder="Name" />
+            <TextInput
+              onChangeText={setUserName}
+              style={{ height: 40, width: 270 }}
+              placeholder="Name"
+            />
           </View>
         </View>
 
@@ -49,37 +131,72 @@ function SignupScreen({ navigation }) {
             <Icon name="email" size={28} color={COLORS.primary} />
           </View>
           <View>
-            <TextInput style={{ height: 40, width: 270 }} placeholder="Email" />
+            <TextInput
+              onChangeText={setUserEmail}
+              style={{ height: 40, width: 270 }}
+              placeholder="Email"
+            />
           </View>
         </View>
+
+        <View style={styles.phoneInput}>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Icon name="phone" size={28} color={COLORS.primary} />
+          </View>
+          <View>
+            <TextInput
+              onChangeText={setUserPhone}
+              style={{ height: 40, width: 270 }}
+              placeholder="Phone"
+            />
+          </View>
+        </View>
+
         <View style={styles.pswInput}>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Icon name="key" size={28} color={COLORS.primary} />
           </View>
           <View>
             <TextInput
+              onChangeText={setUserPassword}
               style={{ height: 40, width: 270 }}
               placeholder="Password"
             />
           </View>
         </View>
 
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("Home", { name: "Home" });
-          }}
-          style={styles.loginButton}
-        >
-          <Text style={styles.loginButtonText}>Signup</Text>
-        </TouchableOpacity>
+        {errorStatus && (
+          <Text
+            style={{ color: COLORS.red, textAlign: "center", marginTop: 20 }}
+          >
+            {errorStatus}
+          </Text>
+        )}
+
+        {activityIndicator ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              addUser();
+            }}
+            style={styles.loginButton}
+          >
+            <Text style={styles.loginButtonText}>Signup</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {!keyboardStatus && (
         <View style={styles.newUserButton}>
           <Text style={styles.newUserHelpText}>Already a member?</Text>
-          <TouchableOpacity  onPress={() => {
-            navigation.navigate("Login", { name: "Login" });
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Login", { name: "Login" });
+            }}
+          >
             <Text style={styles.newUserButtonText}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -98,9 +215,9 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: COLORS.primary,
-    marginTop: 150,
+    marginTop: 140,
   },
-  nameInput:{
+  nameInput: {
     backgroundColor: COLORS.grey,
     flexDirection: "row",
     alingItems: "center",
@@ -111,6 +228,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   emailInput: {
+    backgroundColor: COLORS.grey,
+    flexDirection: "row",
+    alingItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    marginTop: 10,
+  },
+  phoneInput: {
     backgroundColor: COLORS.grey,
     flexDirection: "row",
     alingItems: "center",
@@ -171,6 +298,9 @@ const styles = StyleSheet.create({
   newUserButtonText: {
     color: COLORS.primary,
     fontSize: 16,
+  },
+  loader: {
+    marginTop: 30,
   },
 });
 

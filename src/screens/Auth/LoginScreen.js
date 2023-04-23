@@ -6,8 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  TextInput,
-  KeyboardAvoidingView,
+  TextInput
 } from "react-native";
 import COLORS from "../../constant/COLORS";
 
