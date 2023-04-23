@@ -15,6 +15,7 @@ import DetailScreen from "./src/screens/Detail/DetailScreen";
 
 import { app, db } from "./src/firebase";
 import { collection, doc, getDocs } from "firebase/firestore";
+import LoginScreen from "./src/screens/Auth/LoginScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,15 +54,22 @@ export default function App() {
       <StatusBar animated={true} backgroundColor={COLORS.primary} />
       <Stack.Navigator>
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Home", headerShown: false }}
+          name="Login"
+          component={LoginScreen}
+          options={{ title: "Login", headerShown: false }}
         />
         <Stack.Screen
           name="Welcome"
           component={WelcomeScreen}
           options={{ title: "Welcome", headerShown: false }}
         />
+
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: "Home", headerShown: false }}
+        />
+
         <Stack.Screen
           name="Whishlist"
           component={WhishlistScreen}

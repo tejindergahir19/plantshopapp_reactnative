@@ -15,8 +15,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import ItemCard from "../../components/ItemCard";
 
 import COLORS from "../../constant/COLORS";
-import CATEGORIES from "../../constant/CATEGORIES";
-import PLANTDATA from "../../constant/PLANTDATA";
+
 
 import HomeScreenItemLoader from "../../loaders/HomeScreenItemLoader";
 import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";

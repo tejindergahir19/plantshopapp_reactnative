@@ -42,7 +42,7 @@ function WelcomeScreen({ navigation }) {
       <View style={styles.nextButtonView}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Home", { name: "Home" });
+            navigation.navigate("Login", { name: "Login" });
           }}
           style={styles.nextButton}
         >
