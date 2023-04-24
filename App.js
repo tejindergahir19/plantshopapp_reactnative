@@ -7,7 +7,6 @@ import WelcomeScreen from "./src/screens/WelcomeScreen";
 import HomeScreen from "./src/screens/Home/HomeScreen";
 
 import COLORS from "./src/constant/COLORS";
-import WhishlistScreen from "./src/screens/Whishlist/Whishlist";
 import AlarmScreen from "./src/screens/Alarm/AlarmScreen";
 import AccountScreen from "./src/screens/Account/AccountScreen";
 import CartScreen from "./src/screens/Cart/CartScreen";
@@ -17,6 +16,7 @@ import { app, db } from "./src/firebase";
 import { collection, doc, getDocs } from "firebase/firestore";
 import LoginScreen from "./src/screens/Auth/LoginScreen";
 import SignupScreen from "./src/screens/Auth/SignupScreen";
+import WishlistScreen from "./src/screens/Wishlist/WishlistScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -78,9 +78,9 @@ export default function App() {
        
 
         <Stack.Screen
-          name="Whishlist"
-          component={WhishlistScreen}
-          options={{ title: "Whislist", headerShown: false }}
+          name="Wishlist"
+          component={WishlistScreen}
+          options={{ title: "Wishlist", headerShown: false }}
         />
         <Stack.Screen
           name="Alarm"

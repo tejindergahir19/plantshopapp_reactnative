@@ -30,14 +30,14 @@ function WishlistCard(props) {
         </View>
         <View style={{ flex: 1, justifyContent: "center" }}>
           <Text style={styles.title}>
-            {value?.title.length > 24
-              ? value.title.slice(0, 30) + "..."
-              : value.title}
+            {value?.title?.length > 24
+              ? value?.title?.slice(0, 30) + "..."
+              : value?.title}
           </Text>
 
           <View style={styles.footerItem}>
             <Text style={styles.price}>
-              {value.price} {value.currency}
+              {value?.price} {value?.currency}
             </Text>
           </View>
         </View>

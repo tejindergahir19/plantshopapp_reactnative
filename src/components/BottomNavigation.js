@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View,StyleSheet, TouchableOpacity} from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constant/COLORS";
@@ -21,7 +21,7 @@ function BottomNavigation(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {
-            navigation.navigate("Whishlist", { name: "Whishlist" });
+            navigation.navigate("Wishlist", { name: "Wishlist" });
         }} style={styles.bottomNavigationButton}>
         <Icon
           style={styles.bottomNavigationIcon}

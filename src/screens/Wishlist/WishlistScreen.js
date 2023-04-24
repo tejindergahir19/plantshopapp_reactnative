@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useRef,useEffect} from "react";
 import {
   Text,
   View,
@@ -13,12 +13,53 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
-import PLANTDATA from "../../constant/PLANTDATA";
 import WishlistCard from "../../components/WishlistCard";
 import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 
-function DetailScreen({ navigation, route }) {
-  const value = route.params;
+import { db } from "../../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
+function WishlistScreen({ navigation}) {
+  const userId = useRef(null);
+
+  const [wishlist,setWishlist] = useState(null);
+
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId.current = user.uid;
+        fetchWishlist();
+      } else {
+        navigation.navigate("Login", { name: "Login" });
+      }
+    });
+  };
+
+  const fetchWishlist = async () => {
+    let tmpData = [];
+
+    try {
+      const q = query(
+        collection(db, "tbl_wishlist"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data().productId);
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
+    setWishlist(tmpData);
+  };
+
+  useEffect(() => {
+    isUserLogin();
+  }, []);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
@@ -43,10 +84,10 @@ function DetailScreen({ navigation, route }) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-        {true ? (
+        {wishlist ? (
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={PLANTDATA}
+            data={wishlist}
             renderItem={({ item }) => (
               <WishlistCard navigation={navigation} value={item} />
             )}
@@ -83,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DetailScreen;
+export default WishlistScreen;
