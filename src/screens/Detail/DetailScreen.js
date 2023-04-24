@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   Image,
+  ActivityIndicator,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -14,39 +15,40 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../../constant/COLORS";
 
 import DetailScreenLoader from "../../loaders/DetailScreenLoader";
+import Rating from "../../components/Rating";
 
 import { db } from "../../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  collection,
+  deleteDoc,
+} from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-const Rating = (props) => {
-  const { num } = props;
-
-  let rating = [];
-
-  for (let i = 0; i < num; i++) {
-    rating.push(<Icon name="star" color={COLORS.primary} size={20} />);
-  }
-  for (let i = 0; i < 5 - num; i++) {
-    rating.push(<Icon name="star" color={COLORS.grey} size={20} />);
-  }
-
-  return <>{rating.map((item) => item)}</>;
-};
-
 function DetailScreen({ navigation, route }) {
   const plantId = route?.params;
+
+  const userId = useRef(null);
 
   const [value, setValue] = useState(null);
 
   const [isDataFetched, setIsDataFetched] = useState(false);
 
+  const [inWishlist, setInWishlist] = useState(false);
+  const [showWishlistIcon, setShowWishlistIcon] = useState(false);
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
+        userId.current = user.uid;
         fetchPlantData();
       } else {
         navigation.navigate("Login", { name: "Login" });
@@ -55,14 +57,65 @@ function DetailScreen({ navigation, route }) {
   };
 
   const fetchPlantData = async () => {
+    let querySnapshot;
     try {
-      const querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
-
-      setValue(querySnapshot.data());
-    } catch (e) {
-      console.log("error fetching data");
+      querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      return;
     }
-      setIsDataFetched(true);    
+
+    setValue(querySnapshot.data());
+    setIsDataFetched(true);
+    checkInWishlist();
+  };
+
+  const checkInWishlist = async () => {
+    try {
+      const q = query(
+        collection(db, "tbl_wishlist"),
+        where("userId", "==", userId.current),
+        where("productId", "==", plantId)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const isInWishlist = querySnapshot.docs.length > 0;
+      setInWishlist(isInWishlist);
+    } catch (error) {
+      console.error("Error checking wishlist: ", error);
+    }
+    setShowWishlistIcon(true);
+  };
+
+  const handleWishlist = async () => {
+    try {
+      setShowWishlistIcon(false);
+
+      if (!inWishlist) {
+        await addDoc(collection(db, "tbl_wishlist"), {
+          userId: userId.current,
+          productId: plantId,
+        });
+
+        setInWishlist(true);
+      } else {
+        const q = query(
+          collection(db, "tbl_wishlist"),
+          where("userId", "==", userId.current),
+          where("productId", "==", plantId)
+        );
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.docs[0] &&
+          (await deleteDoc(doc(db, "tbl_wishlist", querySnapshot.docs[0].id)));
+
+        setInWishlist(false);
+      }
+
+      setShowWishlistIcon(true);
+    } catch (error) {
+      console.error("Error handling wishlist: ", error);
+    }
   };
 
   useEffect(() => {
@@ -82,11 +135,7 @@ function DetailScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>Details</Text>
         <View>
           <TouchableOpacity>
-            <Icon
-              name="heart-outline"
-              color={COLORS.primaryBackgroundColor}
-              size={24}
-            />
+            <Icon name="add" color={COLORS.primaryBackgroundColor} size={24} />
           </TouchableOpacity>
         </View>
       </View>
@@ -94,9 +143,21 @@ function DetailScreen({ navigation, route }) {
         <View style={{ flex: 1 }}>
           <View style={[styles.category, styles.iosPadding]}>
             <View>
-              <TouchableOpacity>
-                <Icon name="heart-outline" color={COLORS.red} size={24} />
-              </TouchableOpacity>
+              {showWishlistIcon ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleWishlist();
+                  }}
+                >
+                  <Icon
+                    name={inWishlist ? "heart" : "heart-outline"}
+                    color={COLORS.red}
+                    size={24}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <ActivityIndicator color={COLORS.red} size="small" />
+              )}
             </View>
             <View style={styles.categoryButton}>
               <Text style={styles.categoryButtonText}>{value?.category}</Text>
