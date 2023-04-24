@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   FlatList,
+  RefreshControl
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -22,10 +23,17 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-function WishlistScreen({ navigation}) {
+function WishlistScreen({navigation}) {
   const userId = useRef(null);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const [wishlist,setWishlist] = useState(null);
+
+  const onRefresh = async () => {
+    await fetchWishlist();
+    setRefreshing(false);
+  };
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -55,6 +63,7 @@ function WishlistScreen({ navigation}) {
       console.error("Error fetching wishlist: ", error);
     }
     setWishlist(tmpData);
+
   };
 
   useEffect(() => {
@@ -89,8 +98,12 @@ function WishlistScreen({ navigation}) {
             showsVerticalScrollIndicator={false}
             data={wishlist}
             renderItem={({ item }) => (
-              <WishlistCard navigation={navigation} value={item} />
+              <WishlistCard navigation={navigation} plantId={item} />
             )}
+
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
           />
         ) : (
           <WhishlistScreenLoader />

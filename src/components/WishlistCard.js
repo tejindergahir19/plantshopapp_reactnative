@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect,useRef} from "react";
 import {
   TouchableOpacity,
   Text,
@@ -6,18 +6,103 @@ import {
   StyleSheet,
   Image,
   Platform,
+  ActivityIndicator
 } from "react-native";
 import COLORS from "../constant/COLORS";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
+import { db } from "../firebase";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  collection,
+  deleteDoc,
+} from "firebase/firestore";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
 function WishlistCard(props) {
-  const { value, navigation } = props;
+
+  const userId = useRef(null);
+
+  const { plantId, navigation } = props;
+
+  const [inWishlist, setInWishlist] = useState(true);
+  const [showWishlistIcon, setShowWishlistIcon] = useState(true);
+
+  const [value, setValue] = useState(null);
+
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId.current = user.uid;
+        fetchPlantData();
+      } else {
+        navigation.navigate("Login", { name: "Login" });
+      }
+    });
+  };
+
+  const fetchPlantData = async () => {
+    let querySnapshot;
+    try {
+      querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      return;
+    }
+    setValue(querySnapshot.data());
+  };
+
+  const handleWishlist = async () => {
+    try {
+      setShowWishlistIcon(false);
+
+      if (!inWishlist) {
+        await addDoc(collection(db, "tbl_wishlist"), {
+          userId: userId.current,
+          productId: plantId,
+        });
+
+        setInWishlist(true);
+      } else {
+        const q = query(
+          collection(db, "tbl_wishlist"),
+          where("userId", "==", userId.current),
+          where("productId", "==", plantId)
+        );
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.docs[0] &&
+          (await deleteDoc(doc(db, "tbl_wishlist", querySnapshot.docs[0].id)));
+
+        setInWishlist(false);
+
+   
+
+      }
+
+      setShowWishlistIcon(true);
+    } catch (error) {
+      console.error("Error handling wishlist: ", error);
+    }
+  };
+
+  useEffect(() => {
+    isUserLogin();
+  }, []);
 
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Detail", value);
+        navigation.navigate("Detail",plantId);
       }}
       style={styles.itemCard}
     >
@@ -42,9 +127,21 @@ function WishlistCard(props) {
           </View>
         </View>
         <View style={styles.addToWishlist}>
-          <TouchableOpacity>
-            <Icon name="heart" color={COLORS.red} size={24} />
-          </TouchableOpacity>
+        {showWishlistIcon ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    handleWishlist();
+                  }}
+                >
+                  <Icon
+                    name={inWishlist ? "heart" : "heart-outline"}
+                    color={COLORS.red}
+                    size={24}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <ActivityIndicator color={COLORS.red} size="small" />
+              )}
         </View>
       </View>
     </TouchableOpacity>
