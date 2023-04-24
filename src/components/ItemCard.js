@@ -109,7 +109,7 @@ function ItemCard(props) {
       <View style={styles.itemImg}>
         <Image
           source={{
-            uri:"https://i.ibb.co/M1SgjH3/plant1.png"
+            uri:value?.data?.img
           }}
           style={{ width: 130, height: 130 }}
         />

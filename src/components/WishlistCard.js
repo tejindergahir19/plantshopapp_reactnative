@@ -109,7 +109,9 @@ function WishlistCard(props) {
       <View style={styles.infoSection}>
         <View style={styles.itemImg}>
           <Image
-            source={require("../assets/plant1.png")}
+            source={{
+              uri:value?.img
+            }}
             style={{ width: 65, height: 70 }}
           />
         </View>

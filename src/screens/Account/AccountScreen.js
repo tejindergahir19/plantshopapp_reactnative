@@ -12,7 +12,6 @@ function AccountScreen() {
 
     try {
       const docRef = await addDoc(collection(db, "tbl_plant_data"), {
-        id:count,
         title: data.title,
         description: data.description,
         price: data.price,
