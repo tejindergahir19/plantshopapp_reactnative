@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,7 +22,7 @@ import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
 import { db } from "../../firebase";
-import { collection, getDocs,query,where} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -29,9 +30,10 @@ const auth = getAuth();
 
 function HomeScreen({ navigation }) {
   const userId = useRef(null);
-  
-  const [categoryIndex, setCategoryIndex] = useState(0);
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [categoryIndex, setCategoryIndex] = useState(0);
 
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
@@ -39,7 +41,7 @@ function HomeScreen({ navigation }) {
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
   const [plantData, setPlantData] = useState(null);
 
-  const [wishlist,setWishlist] = useState(null);
+  const [wishlist, setWishlist] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -52,26 +54,34 @@ function HomeScreen({ navigation }) {
     });
   };
 
+  const onRefresh = async () => {
+    setIsCategoryLoaded(false);
+    setIsCardsLoaded(false);
+    setRefreshing(false);
+    await fetchWishlist();
+    setRefreshing(false);
+  };
+
   const fetchWishlist = async () => {
     let tmpData = [];
 
     try {
-        const q = query(
-          collection(db, "tbl_wishlist"),
-          where("userId", "==", userId.current)
-        );
-        const querySnapshot = await getDocs(q);
+      const q = query(
+        collection(db, "tbl_wishlist"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
 
-        querySnapshot.forEach((doc) => {
-          tmpData.push(doc.data());
-        });
-      } catch (error) {
-        console.error("Error fetching wishlist: ", error);
-      }
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data());
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
 
-      setWishlist(tmpData);
-      fetchCategoryData();
-  }
+    setWishlist(tmpData);
+    fetchCategoryData();
+  };
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -178,13 +188,21 @@ function HomeScreen({ navigation }) {
         <>
           <View style={{ flex: 1, paddingVertical: 20 }}>
             <FlatList
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
               showsVerticalScrollIndicator={false}
               columnWrapperStyle={{
                 columnGap: 10,
               }}
               data={plantData}
               renderItem={({ item }) => (
-                <ItemCard navigation={navigation} value={item} wishlist={wishlist} userId = {userId.current} />
+                <ItemCard
+                  navigation={navigation}
+                  value={item}
+                  wishlist={wishlist}
+                  userId={userId.current}
+                />
               )}
               keyExtractor={(item) => item.id}
               numColumns={2}
