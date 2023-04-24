@@ -55,6 +55,11 @@ export default function App() {
       <StatusBar animated={true} backgroundColor={COLORS.primary} />
       <Stack.Navigator>
       <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: "Home", headerShown: false }}
+        />
+      <Stack.Screen
           name="Signup"
           component={SignupScreen}
           options={{ title: "Signup", headerShown: false }}
@@ -70,11 +75,7 @@ export default function App() {
           options={{ title: "Welcome", headerShown: false }}
         />
 
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Home", headerShown: false }}
-        />
+       
 
         <Stack.Screen
           name="Whishlist"
