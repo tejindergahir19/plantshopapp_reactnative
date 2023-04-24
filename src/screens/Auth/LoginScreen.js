@@ -29,13 +29,19 @@ function LoginScreen({ navigation }) {
   const [activityIndicator, setActivityIndicator] = useState(false);
 
 
-  const handleLogin = (email,password) => {
+  const handleLogin = async (email,password) => {
     setActivityIndicator(true);
-    signInWithEmailAndPassword(auth, email, password)
+
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setErrorStatus("");
         // Signed in
         const user = userCredential.user;
+
+        console.log("login init")
+
+        navigation.navigate("Home", { name: "Home" });
+        console.log("login done")
       })
       .catch((error) => {
         // console.log(error.code, error.message);

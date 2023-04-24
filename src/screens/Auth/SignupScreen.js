@@ -33,6 +33,8 @@ function SignupScreen({ navigation }) {
       setErrorStatus("");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // console.log('User account created!');
+
+      navigation.navigate("Home", { name: "Home" });
     } catch (error) {
       // console.log(error.message);
       setErrorStatus(error.message.slice(10,error.message.length));
