@@ -207,6 +207,20 @@ function HomeScreen({ navigation }) {
               keyExtractor={(item) => item.id}
               numColumns={2}
               initialNumToRender={2}
+
+              ListEmptyComponent={
+                <View style={{
+                  flex:1,
+                  height:240,
+                  justifyContent:"flex-end",
+                  alignItems:"center",
+                }}>
+                  <Text style={{
+                    fontSize:16,
+                    color:COLORS.caption
+                  }}>No Records Found</Text>
+                </View>
+              }
             />
           </View>
         </>

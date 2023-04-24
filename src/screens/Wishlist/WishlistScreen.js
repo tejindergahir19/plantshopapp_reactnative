@@ -104,6 +104,20 @@ function WishlistScreen({navigation}) {
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
+
+              ListEmptyComponent={
+                <View style={{
+                  flex:1,
+                  height:320,
+                  justifyContent:"flex-end",
+                  alignItems:"center",
+                }}>
+                  <Text style={{
+                    fontSize:16,
+                    color:COLORS.caption
+                  }}>No Records Found</Text>
+                </View>
+              }
           />
         ) : (
           <WhishlistScreenLoader />
