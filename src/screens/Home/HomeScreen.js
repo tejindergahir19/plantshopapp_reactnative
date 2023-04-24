@@ -21,7 +21,7 @@ import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
 import { db } from "../../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs,query,where} from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -39,16 +39,39 @@ function HomeScreen({ navigation }) {
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
   const [plantData, setPlantData] = useState(null);
 
+  const [wishlist,setWishlist] = useState(null);
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
-        fetchCategoryData();
+        fetchWishlist();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
     });
   };
+
+  const fetchWishlist = async () => {
+    let tmpData = [];
+
+    try {
+        const q = query(
+          collection(db, "tbl_wishlist"),
+          where("userId", "==", userId.current)
+        );
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          tmpData.push(doc.data());
+        });
+      } catch (error) {
+        console.error("Error fetching wishlist: ", error);
+      }
+
+      setWishlist(tmpData);
+      fetchCategoryData();
+  }
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -161,7 +184,7 @@ function HomeScreen({ navigation }) {
               }}
               data={plantData}
               renderItem={({ item }) => (
-                <ItemCard navigation={navigation} value={item} userId = {userId.current} />
+                <ItemCard navigation={navigation} value={item} wishlist={wishlist} userId = {userId.current} />
               )}
               keyExtractor={(item) => item.id}
               numColumns={2}

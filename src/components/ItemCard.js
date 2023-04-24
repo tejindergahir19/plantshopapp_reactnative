@@ -24,8 +24,12 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+function isDataPresent(arr, data) {
+  return arr.some(obj => Object.values(obj).includes(data));
+}
+
 function ItemCard(props) {
-  const { value, navigation,userId} = props;
+  const { value, navigation,userId,wishlist} = props;
 
   const plantId = value.id;
 
@@ -33,21 +37,8 @@ function ItemCard(props) {
   const [showWishlistIcon, setShowWishlistIcon] = useState(false);
 
   const checkInWishlist = async () => {
-    try {
-      const q = query(
-        collection(db, "tbl_wishlist"),
-        where("userId", "==", userId),
-        where("productId", "==", plantId)
-      );
-      const querySnapshot = await getDocs(q);
-
-      const isInWishlist = querySnapshot.docs.length > 0;
-      setInWishlist(isInWishlist);
-    } catch (error) {
-      console.error("Error checking wishlist: ", error);
-    }
+    setInWishlist(isDataPresent(wishlist,plantId));
     setShowWishlistIcon(true);
-    console.log("called")
   };
 
   const handleWishlist = async () => {
