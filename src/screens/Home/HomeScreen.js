@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -16,13 +16,12 @@ import ItemCard from "../../components/ItemCard";
 
 import COLORS from "../../constant/COLORS";
 
-
 import HomeScreenItemLoader from "../../loaders/HomeScreenItemLoader";
 import HomeScreenCategoryLoader from "../../loaders/HomeScreenCategoryLoader";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import {db} from "../../firebase";
-import { collection,getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -35,19 +34,17 @@ function HomeScreen({ navigation }) {
   const [categoryData, setCategoryData] = useState(null);
 
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
-  const [plantData,setPlantData] = useState(null);
-
-  const [uid,setUid] = useState(null);
+  const [plantData, setPlantData] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUid(user.uid);
+        fetchCategoryData();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
     });
-  }
+  };
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -69,25 +66,25 @@ function HomeScreen({ navigation }) {
   const fetchPlantData = async () => {
     let tmpData = [];
 
-    try{
-      const querySnapshot = await getDocs(collection(db,"tbl_plant_data"));
+    try {
+      const querySnapshot = await getDocs(collection(db, "tbl_plant_data"));
       querySnapshot.forEach((doc) => {
-        tmpData.push(doc.data());
+        tmpData.push({
+          id: doc.id,
+          data: doc.data(),
+        });
       });
-    }catch(e){
+    } catch (e) {
       console.log("error fetching data");
     }
 
     setPlantData(tmpData);
     setIsCardsLoaded(true);
-
-    console.log(tmpData)
-  }
+  };
 
   useEffect(() => {
     isUserLogin();
-    fetchCategoryData();
-  },[]);
+  }, []);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
