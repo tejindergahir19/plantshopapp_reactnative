@@ -13,25 +13,12 @@ import COLORS from "../../constant/COLORS";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { db } from "../../firebase";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
-const validateEmail = (email) => {
-  let emailRegEx = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-
-  return emailRegEx.test(email);
-};
-
-const validatePhone = (phone) => {
-  let phoneRegEx = /[0-9]{4}/;
-
-  return phoneRegEx.test(phone);
-};
+const auth = getAuth();
 
 function SignupScreen({ navigation }) {
-  const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userPhone, setUserPhone] = useState("");
   const [userPassword, setUserPassword] = useState("");
 
   const [activityIndicator, setActivityIndicator] = useState(false);
@@ -40,56 +27,17 @@ function SignupScreen({ navigation }) {
 
   const [errorStatus, setErrorStatus] = useState("");
 
-  const addUser = async () => {
+  const handleSignUp = async (email, password) => {
+    setActivityIndicator(true);
     try {
-      setActivityIndicator(true);
-      const fields = [userName, userEmail, userPassword, userPhone];
-  
-      if (fields.every((field) => field)) {
-        const [emailIsValid, phoneIsValid] = await Promise.all([
-          validateEmail(userEmail),
-          validatePhone(userPhone),
-        ]);
-  
-        if (emailIsValid && phoneIsValid) {
-          const docId = [];
-  
-          const q = query(
-            collection(db, "tbl_customer"),
-            where("email", "==", userEmail),
-            where("phone", "==", userPhone)
-          );
-          const querySnapshot = await getDocs(q);
-  
-          querySnapshot.forEach((doc) => {
-            docId.push(doc.id);
-          });
-  
-          if (docId.length === 0) {
-            const docRef = await addDoc(collection(db, "tbl_customer"), {
-              name: userName,
-              email: userEmail,
-              password: userPassword,
-              phone: userPhone,
-              address: [],
-            });
-            console.log("Document written with ID: ", docRef.id);
-            navigation.navigate("Home", { name: "Home" });
-          } else {
-            setErrorStatus("User Already Exists!");
-          }
-        } else {
-          setErrorStatus(emailIsValid ? "Invalid Phone!" : "Invalid Email!");
-        }
-      } else {
-        setErrorStatus("All Fields Required!");
-      }
+      setErrorStatus("");
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User account created!');
     } catch (error) {
-      console.log("Error adding document: ", error);
-      setErrorStatus("Something Went Wrong!");
-    } finally {
-      setActivityIndicator(false);
+      console.log(error.message);
+      setErrorStatus(error.message.slice(10,error.message.length));
     }
+    setActivityIndicator(false);
   };
   
 
@@ -113,18 +61,7 @@ function SignupScreen({ navigation }) {
     >
       <View style={styles.defaults}>
         <Text style={styles.login}>Signup</Text>
-        <View style={styles.nameInput}>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <Icon name="account" size={28} color={COLORS.primary} />
-          </View>
-          <View>
-            <TextInput
-              onChangeText={setUserName}
-              style={{ height: 40, width: 270 }}
-              placeholder="Name"
-            />
-          </View>
-        </View>
+        
 
         <View style={styles.emailInput}>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -139,18 +76,7 @@ function SignupScreen({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.phoneInput}>
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <Icon name="phone" size={28} color={COLORS.primary} />
-          </View>
-          <View>
-            <TextInput
-              onChangeText={setUserPhone}
-              style={{ height: 40, width: 270 }}
-              placeholder="Phone"
-            />
-          </View>
-        </View>
+        
 
         <View style={styles.pswInput}>
           <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -179,9 +105,7 @@ function SignupScreen({ navigation }) {
           </View>
         ) : (
           <TouchableOpacity
-            onPress={() => {
-              addUser();
-            }}
+            onPress={() => handleSignUp(userEmail, userPassword)} 
             style={styles.loginButton}
           >
             <Text style={styles.loginButtonText}>Signup</Text>
@@ -215,17 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: COLORS.primary,
-    marginTop: 140,
-  },
-  nameInput: {
-    backgroundColor: COLORS.grey,
-    flexDirection: "row",
-    alingItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginTop: 40,
+    marginTop: 150,
   },
   emailInput: {
     backgroundColor: COLORS.grey,
@@ -235,17 +149,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 6,
-    marginTop: 10,
-  },
-  phoneInput: {
-    backgroundColor: COLORS.grey,
-    flexDirection: "row",
-    alingItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-    marginTop: 10,
+    marginTop: 40,
   },
   pswInput: {
     backgroundColor: COLORS.grey,
