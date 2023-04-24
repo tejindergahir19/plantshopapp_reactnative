@@ -32,9 +32,9 @@ function SignupScreen({ navigation }) {
     try {
       setErrorStatus("");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('User account created!');
+      // console.log('User account created!');
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
       setErrorStatus(error.message.slice(10,error.message.length));
     }
     setActivityIndicator(false);

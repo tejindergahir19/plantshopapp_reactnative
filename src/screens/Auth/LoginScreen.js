@@ -6,14 +6,46 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  TextInput
+  TextInput,
+  ActivityIndicator
 } from "react-native";
 import COLORS from "../../constant/COLORS";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
+
 function LoginScreen({ navigation }) {
+
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+
   const [keyboardStatus, setKeyboardStatus] = useState(false);
+
+  const [errorStatus, setErrorStatus] = useState("");
+
+  const [activityIndicator, setActivityIndicator] = useState(false);
+
+
+  const handleLogin = (email,password) => {
+    setActivityIndicator(true);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setErrorStatus("");
+        // Signed in
+        const user = userCredential.user;
+      })
+      .catch((error) => {
+        // console.log(error.code, error.message);
+        setErrorStatus(error.message.slice(10,error.message.length));
+      });
+
+     setTimeout(()=>{
+      setActivityIndicator(false);
+     },500);
+  };
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -41,7 +73,11 @@ function LoginScreen({ navigation }) {
             <Icon name="email" size={28} color={COLORS.primary} />
           </View>
           <View>
-            <TextInput style={{ height: 40, width: 270 }} placeholder="Email" />
+            <TextInput
+              onChangeText={setUserEmail}
+              style={{ height: 40, width: 270 }}
+              placeholder="Email"
+            />
           </View>
         </View>
         <View style={styles.pswInput}>
@@ -50,20 +86,37 @@ function LoginScreen({ navigation }) {
           </View>
           <View>
             <TextInput
+              onChangeText={setUserPassword}
               style={{ height: 40, width: 270 }}
               placeholder="Password"
             />
           </View>
         </View>
 
-        <TouchableOpacity
+        {errorStatus && (
+          <Text
+            style={{ color: COLORS.red, textAlign: "center", marginTop: 20 }}
+          >
+            {errorStatus}
+          </Text>
+        )}
+
+        {activityIndicator ? (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          </View>
+        ) : (
+          <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Home", { name: "Home" });
+            handleLogin(userEmail,userPassword)
           }}
           style={styles.loginButton}
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
+        )}
+
+        
 
         {!keyboardStatus && (
           <TouchableOpacity style={styles.forgotButton}>
@@ -75,9 +128,11 @@ function LoginScreen({ navigation }) {
       {!keyboardStatus && (
         <View style={styles.newUserButton}>
           <Text style={styles.newUserHelpText}>Not a member?</Text>
-          <TouchableOpacity  onPress={() => {
-            navigation.navigate("Signup", { name: "Signup" });
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Signup", { name: "Signup" });
+            }}
+          >
             <Text style={styles.newUserButtonText}>Signup now</Text>
           </TouchableOpacity>
         </View>
@@ -159,6 +214,9 @@ const styles = StyleSheet.create({
   newUserButtonText: {
     color: COLORS.primary,
     fontSize: 16,
+  },
+  loader: {
+    marginTop: 30,
   },
 });
 
