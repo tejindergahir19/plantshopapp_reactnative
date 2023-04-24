@@ -59,7 +59,6 @@ function DetailScreen({ navigation, route }) {
       const querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
 
       setValue(querySnapshot.data());
-      console.log(querySnapshot.data());
     } catch (e) {
       console.log("error fetching data");
     }
