@@ -24,6 +24,10 @@ import BottomNavigation from "../../components/BottomNavigation";
 import {db} from "../../firebase";
 import { collection,getDocs } from "firebase/firestore";
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
 function HomeScreen({ navigation }) {
   const [categoryIndex, setCategoryIndex] = useState(0);
 
@@ -32,6 +36,18 @@ function HomeScreen({ navigation }) {
 
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
   const [plantData,setPlantData] = useState(null);
+
+  const [uid,setUid] = useState(null);
+
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUid(user.uid);
+      } else {
+        navigation.navigate("Login", { name: "Login" });
+      }
+    });
+  }
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -69,6 +85,7 @@ function HomeScreen({ navigation }) {
   }
 
   useEffect(() => {
+    isUserLogin();
     fetchCategoryData();
   },[]);
 
