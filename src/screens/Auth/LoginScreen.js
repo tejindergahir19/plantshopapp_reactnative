@@ -42,9 +42,7 @@ function LoginScreen({ navigation }) {
         setErrorStatus(error.message.slice(10,error.message.length));
       });
 
-     setTimeout(()=>{
       setActivityIndicator(false);
-     },500);
   };
 
   useEffect(() => {
