@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef} from "react";
 import {
   Text,
   StyleSheet,
@@ -28,7 +28,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
 
 function HomeScreen({ navigation }) {
+  const userId = useRef(null);
+  
   const [categoryIndex, setCategoryIndex] = useState(0);
+
 
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
@@ -39,6 +42,7 @@ function HomeScreen({ navigation }) {
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
+        userId.current = user.uid;
         fetchCategoryData();
       } else {
         navigation.navigate("Login", { name: "Login" });
@@ -157,7 +161,7 @@ function HomeScreen({ navigation }) {
               }}
               data={plantData}
               renderItem={({ item }) => (
-                <ItemCard navigation={navigation} value={item} />
+                <ItemCard navigation={navigation} value={item} userId = {userId.current} />
               )}
               keyExtractor={(item) => item.id}
               numColumns={2}
