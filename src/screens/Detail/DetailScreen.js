@@ -8,6 +8,8 @@ import {
   Platform,
   Image,
   ActivityIndicator,
+  Alert,
+  FlatList,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -45,6 +47,11 @@ function DetailScreen({ navigation, route }) {
   const [inWishlist, setInWishlist] = useState(false);
   const [showWishlistIcon, setShowWishlistIcon] = useState(false);
 
+  const [inCart,setInCart] =  useState(false);
+  const [showCartButton,setShowCartButton] = useState(false);
+
+  const productQuantity = useRef(0);
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -66,8 +73,10 @@ function DetailScreen({ navigation, route }) {
     }
 
     setValue(querySnapshot.data());
+    productQuantity.current = querySnapshot.data()?.unit;
     setIsDataFetched(true);
     checkInWishlist();
+    checkInCart();
   };
 
   const checkInWishlist = async () => {
@@ -86,6 +95,26 @@ function DetailScreen({ navigation, route }) {
     }
     setShowWishlistIcon(true);
   };
+
+  const checkInCart = async () => {
+
+    try{
+      const q = query(
+        collection(db,"tbl_cart"),
+        where("userId","==",userId.current),
+        where("productId","==",plantId)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      const isInCart = querySnapshot.docs.length > 0;
+      setInCart(isInCart);
+    }catch(error){
+      console.error("Error checking wishlist: ", error);
+    }
+
+    setShowCartButton(true);
+  }
 
   const handleWishlist = async () => {
     try {
@@ -117,6 +146,25 @@ function DetailScreen({ navigation, route }) {
       console.error("Error handling wishlist: ", error);
     }
   };
+
+  const handleAddToCart = async () => {
+    setShowCartButton(false);
+    if(productQuantity.current != 0){
+      try{
+        await addDoc(collection(db, "tbl_cart"), {
+          userId: userId.current,
+          productId: plantId,
+          quantity: 1
+        });
+        setInCart(true);
+      }catch(error){
+        console.error("Error handling cart: ", error);
+      }
+    }else{
+      Alert.alert("Sorry Product Not Available !");
+    }
+    setShowCartButton(true);
+  }
 
   useEffect(() => {
     isUserLogin();
@@ -231,9 +279,18 @@ function DetailScreen({ navigation, route }) {
               </Text>
             </View>
             <View style={styles.aboutCard}>
-              <TouchableOpacity style={styles.addToCartButton}>
-                <Text style={styles.addToCartText}>Add to cart</Text>
+             <TouchableOpacity onPress={
+                ()=>{
+                  !inCart && handleAddToCart();
+                }
+              } style={(inCart ? styles.addedToCartButton : styles.addToCartButton)}>
+              {
+                showCartButton ? <Text style={(inCart ? styles.addedToCartText : styles.addToCartText)}>{inCart ? "Added" : "Add"} to cart</Text> :
+                <ActivityIndicator size="small" color={COLORS.white}/>
+              }
+                
               </TouchableOpacity>
+              
             </View>
           </View>
         </View>
@@ -361,6 +418,18 @@ const styles = StyleSheet.create({
     color: COLORS.primaryBackgroundColor,
     textTransform: "capitalize",
   },
+  addedToCartButton: {
+    backgroundColor: COLORS.caption,
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  addedToCartText: {
+    fontWeight: "bold",
+    fontSize: 18,
+    color: COLORS.white,
+    textTransform: "capitalize",
+  }
 });
 
 export default DetailScreen;

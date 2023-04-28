@@ -8,6 +8,7 @@ import {
   ScrollView,
   FlatList,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -137,6 +138,22 @@ function HomeScreen({ navigation }) {
             }}
           >
             <Icon name="shopping-cart" size={32} color={COLORS.primary} />
+            <View style={{
+              backgroundColor:COLORS.primary,
+              justifyContent:"center",
+              alignItems:"center",
+              borderRadius:50,
+              position:"absolute",
+              right:-2,
+              top:-8,
+              paddingHorizontal:5,
+              paddingVertical:Platform.OS == "ios" ? 5 : 0
+            }}>
+              <Text style={{
+                color:COLORS.white,
+                fontWeight:"bold",
+              }}>{0}</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>
