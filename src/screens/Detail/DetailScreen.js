@@ -8,8 +8,7 @@ import {
   Platform,
   Image,
   ActivityIndicator,
-  Alert,
-  FlatList,
+  Alert
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -50,8 +49,6 @@ function DetailScreen({ navigation, route }) {
   const [inCart,setInCart] =  useState(false);
   const [showCartButton,setShowCartButton] = useState(false);
 
-  const productQuantity = useRef(0);
-
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -73,7 +70,6 @@ function DetailScreen({ navigation, route }) {
     }
 
     setValue(querySnapshot.data());
-    productQuantity.current = querySnapshot.data()?.unit;
     setIsDataFetched(true);
     checkInWishlist();
     checkInCart();
@@ -149,7 +145,6 @@ function DetailScreen({ navigation, route }) {
 
   const handleAddToCart = async () => {
     setShowCartButton(false);
-    if(productQuantity.current != 0){
       try{
         await addDoc(collection(db, "tbl_cart"), {
           userId: userId.current,
@@ -160,11 +155,8 @@ function DetailScreen({ navigation, route }) {
       }catch(error){
         console.error("Error handling cart: ", error);
       }
-    }else{
-      Alert.alert("Sorry Product Not Available !");
+      setShowCartButton(true);
     }
-    setShowCartButton(true);
-  }
 
   useEffect(() => {
     isUserLogin();
@@ -281,11 +273,14 @@ function DetailScreen({ navigation, route }) {
             <View style={styles.aboutCard}>
              <TouchableOpacity onPress={
                 ()=>{
-                  !inCart && handleAddToCart();
+                  (value?.unit != 0 && !inCart) && handleAddToCart();
                 }
-              } style={(inCart ? styles.addedToCartButton : styles.addToCartButton)}>
+              } style={(inCart || value?.unit == 0 ? styles.addedToCartButton : styles.addToCartButton)}>
               {
-                showCartButton ? <Text style={(inCart ? styles.addedToCartText : styles.addToCartText)}>{inCart ? "Added" : "Add"} to cart</Text> :
+                showCartButton ? <Text style={(inCart  ? styles.addedToCartText : styles.addToCartText)}>{
+                  value?.unit == "0" ?
+                  "Not Available" : (inCart ? "Added to cart" : "Add to cart")
+                }</Text> :
                 <ActivityIndicator size="small" color={COLORS.white}/>
               }
                 
