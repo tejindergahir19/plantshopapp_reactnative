@@ -78,7 +78,7 @@ function ItemCard(props) {
 
   return (
     <TouchableOpacity
-      key={Math.random()}
+      key={value?.id}
       onPress={() => {
         navigation.navigate("Detail", value?.id);
       }}

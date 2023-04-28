@@ -63,7 +63,6 @@ function WishlistScreen({navigation}) {
       console.error("Error fetching wishlist: ", error);
     }
     setWishlist(tmpData);
-
   };
 
   useEffect(() => {

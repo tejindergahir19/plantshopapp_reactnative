@@ -6,7 +6,7 @@ const PLANTDATA = [
     "currency": "₹",
     "category": "succulent",
     "img": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhYZNg9Yjn_UpkpxWr08KJFCweFOm02_6M0C_LP1lamxyHErepGuVEWVRJrqQyVsAOu5hX_LQqyKU3yRfkp-JgvXPaUxrLv0zOHqKTVEYQSQDlZhdUulsx6wUcG23vkpLpFfxVvyNTJHlQ_Kzw4mc6m0nk-PHqmZBpI8RfTLWlC70MG2Z8X8K9RRzCyww/s400/Sansevieria_10-inch_1_400x-removebg-preview.png",
-    "size": "large",
+    "size": "medium",
     "plantType": "indoor",
     "height": 36,
     "humidity": 50,
@@ -28,6 +28,36 @@ const PLANTDATA = [
     "waterEvery": "8",
     "unit": 50,
     "rating": 4
-  }
+  },
+  {
+    "title": "English Ivy",
+    "description": "A classic and elegant plant with small, glossy leaves that can trail down from hanging baskets or climb up walls.",
+    "price": 220,
+    "currency": "₹",
+    "category": "climbing plant",
+    "img": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdf_Y5quFDDkRsfBAY0yOa4v6Mq9BNjUoHZVvtz8zfIFncTFFNajz6_7EZSLzW7zYYErxg6n_VAuCbQU8jUXU2nejYMhskxMEHpC_C47T9v2Ocu2_c-Db1v3imy7Zk4UxDvckO4aIEsdI1lifOES-_8pO3wIdLbldRyUHj1AkgIyQz7XBaAPGTHO9A_Q/s320/50379762-removebg-preview.png",
+    "size": "medium",
+    "plantType": "indoor",
+    "height": 8,
+    "humidity": 60,
+    "waterEvery": "8",
+    "unit": 25,
+    "rating": 3
+  },
+  {
+    "title": "English Ivy",
+    "description": "A classic and elegant plant with small, glossy leaves that can trail down from hanging baskets or climb up walls.",
+    "price": 220,
+    "currency": "₹",
+    "category": "climbing plant",
+    "img": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhdf_Y5quFDDkRsfBAY0yOa4v6Mq9BNjUoHZVvtz8zfIFncTFFNajz6_7EZSLzW7zYYErxg6n_VAuCbQU8jUXU2nejYMhskxMEHpC_C47T9v2Ocu2_c-Db1v3imy7Zk4UxDvckO4aIEsdI1lifOES-_8pO3wIdLbldRyUHj1AkgIyQz7XBaAPGTHO9A_Q/s320/50379762-removebg-preview.png",
+    "size": "medium",
+    "plantType": "indoor",
+    "height": 8,
+    "humidity": 60,
+    "waterEvery": "8",
+    "unit": 25,
+    "rating": 3
+  },
 ]
 export default PLANTDATA;

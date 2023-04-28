@@ -84,9 +84,6 @@ function WishlistCard(props) {
           (await deleteDoc(doc(db, "tbl_wishlist", querySnapshot.docs[0].id)));
 
         setInWishlist(false);
-
-   
-
       }
 
       setShowWishlistIcon(true);
