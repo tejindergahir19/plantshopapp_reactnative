@@ -9,6 +9,7 @@ import {
   Image,
   ActivityIndicator,
   Alert,
+  Vibration
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -290,6 +291,8 @@ function DetailScreen({ navigation, route }) {
               <TouchableOpacity
                 onPress={() => {
                   value?.unit != 0 && !inCart && handleAddToCart();
+                  inCart && Alert.alert("Already in Cart !");
+                inCart && Vibration.vibrate();
                 }}
                 style={
                   inCart || value?.unit == 0
@@ -304,7 +307,7 @@ function DetailScreen({ navigation, route }) {
                     }
                   >
                     {value?.unit == "0"
-                      ? "Not Available"
+                      ? "Out of Stock"
                       : inCart
                       ? "Added to cart"
                       : "Add to cart"}

@@ -1,4 +1,4 @@
-import React,{useState,useRef,useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   TouchableOpacity,
   Text,
@@ -6,7 +6,10 @@ import {
   StyleSheet,
   Image,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  FlatList,
+  Alert,
+  Vibration,
 } from "react-native";
 import COLORS from "../constant/COLORS";
 
@@ -15,30 +18,37 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { db } from "../firebase";
 import {
   doc,
-  getDoc,
   getDocs,
   query,
   where,
   addDoc,
   collection,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 function isDataPresent(arr, data) {
-  return arr.some(obj => Object.values(obj).includes(data));
+  return arr.some((obj) => Object.values(obj).includes(data));
 }
 
 function ItemCard(props) {
-  const { value, navigation,userId,wishlist} = props;
+  const {value, navigation, userId, wishlist, cartList } = props;
 
   const plantId = value.id;
 
   const [inWishlist, setInWishlist] = useState(false);
   const [showWishlistIcon, setShowWishlistIcon] = useState(false);
+  const [inCartList, setInCartList] = useState(false);
+  const [showCartIcon, setShowCartIcon] = useState(false);
 
   const checkInWishlist = async () => {
-    setInWishlist(isDataPresent(wishlist,plantId));
+    setInWishlist(isDataPresent(wishlist, plantId));
     setShowWishlistIcon(true);
+  };
+
+  const checkInCartList = async () => {
+    setInCartList(isDataPresent(cartList, plantId));
+    setShowCartIcon(true);
   };
 
   const handleWishlist = async () => {
@@ -72,9 +82,42 @@ function ItemCard(props) {
     }
   };
 
-  useEffect(()=>{
+  const updateQuantity = async () => {
+    console.log(value.unit);
+    const docRef = doc(db, "tbl_plant_data", plantId);
+    try {
+      await updateDoc(docRef, {
+        unit: value?.data?.unit - 1
+      });
+    } catch (error) {
+      console.log("Not able to update", error);
+    }
+
+    console.log("done");
+  };
+
+  const handleAddToCart = async () => {
+    setShowCartIcon(false);
+    try {
+      const doc = await addDoc(collection(db, "tbl_cart"), {
+        userId: userId,
+        productId: plantId,
+        quantity: 1,
+      });
+      updateQuantity();
+      setInCartList(true);
+      Alert.alert("Product Added to Cart");
+      Vibration.vibrate();
+    } catch (error) {
+      console.error("Error handling cart: ", error);
+    }
+    setShowCartIcon(true);
+  };
+
+  useEffect(() => {
     checkInWishlist();
-  },[])
+    checkInCartList();
+  }, []);
 
   return (
     <TouchableOpacity
@@ -85,31 +128,34 @@ function ItemCard(props) {
       style={styles.itemCard}
     >
       <View style={styles.addToWishlist}>
-      {showWishlistIcon ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    handleWishlist();
-                  }}
-                >
-                  <Icon
-                    name={inWishlist ? "heart" : "heart-outline"}
-                    color={COLORS.red}
-                    size={24}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <ActivityIndicator color={COLORS.red} size="small" />
-              )}
+        {showWishlistIcon ? (
+          <TouchableOpacity
+            onPress={() => {
+              handleWishlist();
+            }}
+          >
+            <Icon
+              name={inWishlist ? "heart" : "heart-outline"}
+              color={COLORS.red}
+              size={24}
+            />
+          </TouchableOpacity>
+        ) : (
+          <ActivityIndicator color={COLORS.red} size="small" />
+        )}
         {value?.data?.unit <= 5 && value?.data?.unit > 0 && (
           <Text style={styles.stockLeft}>
             Hurry Only {value?.data?.unit} left !
           </Text>
         )}
+        {value?.data?.unit == 0 && (
+          <Text style={styles.stockLeft}>Out of Stock</Text>
+        )}
       </View>
       <View style={styles.itemImg}>
         <Image
           source={{
-            uri:value?.data?.img
+            uri: value?.data?.img,
           }}
           style={{ width: 130, height: 130 }}
         />
@@ -126,11 +172,27 @@ function ItemCard(props) {
         </Text>
 
         <View style={styles.cartButton}>
-          <TouchableOpacity>
-            <Text>
-              <Icon name="cart-outline" size={24} />
-            </Text>
-          </TouchableOpacity>
+          {showCartIcon ? (
+            <TouchableOpacity
+              onPress={() => {
+                value?.data?.unit != 0 && !inCartList && handleAddToCart();
+                inCartList && Alert.alert("Already in Cart !");
+                inCartList && Vibration.vibrate();
+              }}
+            >
+              {
+                value?.data?.unit != 0 && <Text>
+                <Icon
+                  name={inCartList ? "cart" : "cart-outline"}
+                  color={inCartList ? COLORS.primary : COLORS.black}
+                  size={24}
+                />
+              </Text>
+              }
+            </TouchableOpacity>
+          ) : (
+            <ActivityIndicator color={COLORS.black} size="small" />
+          )}
         </View>
       </View>
     </TouchableOpacity>

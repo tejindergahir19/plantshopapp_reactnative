@@ -43,6 +43,7 @@ function HomeScreen({ navigation }) {
   const [plantData, setPlantData] = useState(null);
 
   const [wishlist, setWishlist] = useState(null);
+  const [cartList,setCartList] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -60,6 +61,7 @@ function HomeScreen({ navigation }) {
     setIsCardsLoaded(false);
     setRefreshing(false);
     await fetchWishlist();
+    await fetchCartList();
     setRefreshing(false);
   };
 
@@ -81,8 +83,28 @@ function HomeScreen({ navigation }) {
     }
 
     setWishlist(tmpData);
+    fetchCartList();
     fetchCategoryData();
   };
+
+  const fetchCartList = async () => {
+    let tmpData = [];
+
+    try {
+      const q = query(
+        collection(db, "tbl_cart"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data());
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
+    setCartList(tmpData);
+  }
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -152,7 +174,7 @@ function HomeScreen({ navigation }) {
               <Text style={{
                 color:COLORS.white,
                 fontWeight:"bold",
-              }}>{0}</Text>
+              }}>{cartList?.length ?? "-"}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -219,6 +241,7 @@ function HomeScreen({ navigation }) {
                   value={item}
                   wishlist={wishlist}
                   userId={userId.current}
+                  cartList={cartList}
                 />
               )}
               keyExtractor={(item) => item.id}
