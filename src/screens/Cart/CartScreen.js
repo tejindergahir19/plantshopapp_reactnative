@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -12,11 +12,61 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
-import PLANTDATA from "../../constant/PLANTDATA";
 import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 import CartItemCard from "../../components/CartItemCard";
 
-function CartScreen({navigation}) {
+import { db } from "../../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
+function CartScreen({ navigation }) {
+  const userId = useRef(null);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [cartList, setCartList] = useState(null);
+
+  const onRefresh = async () => {
+    await fetchCartList();
+    setRefreshing(false);
+  };
+
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId.current = user.uid;
+        fetchCartList();
+      } else {
+        navigation.navigate("Login", { name: "Login" });
+      }
+    });
+  };
+
+  const fetchCartList = async () => {
+    let tmpData = [];
+
+    try {
+      const q = query(
+        collection(db, "tbl_cart"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        tmpData.push(doc.data());
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
+
+    setCartList(tmpData);
+  };
+
+  useEffect(() => {
+    isUserLogin();
+  }, []);
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.defaults]}>
@@ -41,39 +91,55 @@ function CartScreen({navigation}) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-        {true ? (
+        {cartList ? (
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={PLANTDATA}
+            data={cartList}
             renderItem={({ item }) => (
-              <CartItemCard navigation={navigation} value={item} />
+              <CartItemCard navigation={navigation} plantId={item.productId} quantity={item.quantity} />
             )}
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  height: 260,
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: COLORS.caption,
+                  }}
+                >
+                  No Records Found
+                </Text>
+              </View>
+            }
           />
         ) : (
-          <WhishlistScreenLoader /> // also use as <CartScreenLoader />
+          <WhishlistScreenLoader />
         )}
       </View>
 
-      <View style={[styles.totalAmount,styles.iosPadding]}>
-         <View style={styles.subTotal}>
-            <Text style={styles.subTotalText}>Sub total</Text>
-            <Text style={styles.subTotalAmountText}>1080 $</Text>
-         </View>
-         <View style={styles.delivery}>
-            <Text style={styles.deliveryText}>Delivery</Text>
-            <Text style={styles.deliveryAmountText}>3 $</Text>
-         </View>
-          <View style={styles.total}>
-            <Text style={styles.totalText}>Total</Text>
-            <Text style={styles.totalAmountText}>1083 $</Text>
-          </View>
+      <View style={[styles.totalAmount, styles.iosPadding]}>
+        <View style={styles.subTotal}>
+          <Text style={styles.subTotalText}>Sub total</Text>
+          <Text style={styles.subTotalAmountText}>1080 $</Text>
+        </View>
+        <View style={styles.delivery}>
+          <Text style={styles.deliveryText}>Delivery</Text>
+          <Text style={styles.deliveryAmountText}>3 $</Text>
+        </View>
+        <View style={styles.total}>
+          <Text style={styles.totalText}>Total</Text>
+          <Text style={styles.totalAmountText}>1083 $</Text>
+        </View>
 
-          <TouchableOpacity style={styles.checkOutButton}>
-            <Text style={styles.checkOutButtonText}>
-              checkout
-            </Text>
-          </TouchableOpacity>
-
+        <TouchableOpacity style={styles.checkOutButton}>
+          <Text style={styles.checkOutButtonText}>checkout</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -97,75 +163,75 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  totalAmount:{
-    paddingVertical:12
+  totalAmount: {
+    paddingVertical: 12,
   },
-  subTotal:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center",
-    paddingBottom:8,
-    borderBottomColor:COLORS.grey,
-    borderBottomWidth:Platform.OS == "ios" ? 1 : 2,
-    borderStyle:Platform.OS == "ios" ? "solid" : "dashed" 
+  subTotal: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 8,
+    borderBottomColor: COLORS.grey,
+    borderBottomWidth: Platform.OS == "ios" ? 1 : 2,
+    borderStyle: Platform.OS == "ios" ? "solid" : "dashed",
   },
-  subTotalText:{
-    color:COLORS.caption,
-    fontSize:16,
+  subTotalText: {
+    color: COLORS.caption,
+    fontSize: 16,
   },
-  subTotalAmountText:{
-    color:COLORS.caption,
-    fontSize:16,
-    fontWeight:"bold"
+  subTotalAmountText: {
+    color: COLORS.caption,
+    fontSize: 16,
+    fontWeight: "bold",
   },
-  delivery:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center",
-    paddingTop:8,
-  paddingBottom:18,
-    borderBottomColor:COLORS.grey,
-    borderBottomWidth:3
+  delivery: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 8,
+    paddingBottom: 18,
+    borderBottomColor: COLORS.grey,
+    borderBottomWidth: 3,
   },
-  deliveryText:{
-    color:COLORS.caption,
-    fontSize:16,
+  deliveryText: {
+    color: COLORS.caption,
+    fontSize: 16,
   },
-  deliveryAmountText:{
-    color:COLORS.caption,
-    fontSize:16,
-    fontWeight:"bold"
+  deliveryAmountText: {
+    color: COLORS.caption,
+    fontSize: 16,
+    fontWeight: "bold",
   },
-  total:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center",
-    paddingTop:18
+  total: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 18,
   },
-  totalText:{
-    color:COLORS.caption,
-    fontSize:20,
-    fontWeight:"bold"
+  totalText: {
+    color: COLORS.caption,
+    fontSize: 20,
+    fontWeight: "bold",
   },
-  totalAmountText:{
-    color:COLORS.primary,
-    fontSize:22,
-    fontWeight:"bold"
+  totalAmountText: {
+    color: COLORS.primary,
+    fontSize: 22,
+    fontWeight: "bold",
   },
-  checkOutButton:{
-    backgroundColor:COLORS.primary,
-    justifyContent:"center",
-    alignItems:"center",
-    paddingVertical:12,
-    borderRadius:6,
-    marginTop:24
+  checkOutButton: {
+    backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 6,
+    marginTop: 24,
   },
-  checkOutButtonText:{
+  checkOutButtonText: {
     fontWeight: "bold",
     fontSize: 18,
     color: COLORS.primaryBackgroundColor,
-    textTransform:"capitalize"
-  }
+    textTransform: "capitalize",
+  },
 });
 
 export default CartScreen;

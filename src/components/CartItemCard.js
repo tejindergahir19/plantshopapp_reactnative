@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState,useEffect,useRef} from "react";
 import {
   TouchableOpacity,
   Text,
@@ -11,10 +11,55 @@ import COLORS from "../constant/COLORS";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
-function CartItemCard(props) {
-  const { value, navigation } = props;
+import { db } from "../firebase";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  collection,
+  deleteDoc,
+} from "firebase/firestore";
 
-  const [plantQuantity,setPlantQuantity] = useState(1);
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth();
+
+function CartItemCard(props) {
+  const userId = useRef(null);
+  const { plantId,quantity, navigation } = props;
+
+  const [plantQuantity,setPlantQuantity] = useState(quantity);
+
+  const [value, setValue] = useState(null);
+
+  const isUserLogin = async () => {
+    await onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userId.current = user.uid;
+        fetchPlantData();
+      } else {
+        navigation.navigate("Login", { name: "Login" });
+      }
+    });
+  };
+
+  const fetchPlantData = async () => {
+    let querySnapshot;
+    try {
+      querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      return;
+    }
+    setValue(querySnapshot.data());
+  };
+
+  useEffect(() => {
+    isUserLogin();
+  }, []);
 
   return (
     <TouchableOpacity
@@ -33,13 +78,13 @@ function CartItemCard(props) {
         <View style={{ flex: 1, justifyContent: "center" }}>
           <Text style={styles.title}>
             {value?.title.length > 24
-              ? value.title.slice(0, 30) + "..."
-              : value.title}
+              ? value?.title.slice(0, 30) + "..."
+              : value?.title}
           </Text>
 
           <View style={styles.footerItem}>
             <Text style={styles.price}>
-              {value.price} {value.currency}
+              {value?.price} {value?.currency}
             </Text>
           </View>
         </View>
