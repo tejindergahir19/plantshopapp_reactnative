@@ -8,7 +8,7 @@ import {
   Platform,
   Image,
   ActivityIndicator,
-  Alert
+  Alert,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -28,6 +28,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+updateDoc
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -46,8 +47,10 @@ function DetailScreen({ navigation, route }) {
   const [inWishlist, setInWishlist] = useState(false);
   const [showWishlistIcon, setShowWishlistIcon] = useState(false);
 
-  const [inCart,setInCart] =  useState(false);
-  const [showCartButton,setShowCartButton] = useState(false);
+  const [inCart, setInCart] = useState(false);
+  const [showCartButton, setShowCartButton] = useState(false);
+
+  const [productQuantity, setProductQuantity] = useState(0);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -70,6 +73,7 @@ function DetailScreen({ navigation, route }) {
     }
 
     setValue(querySnapshot.data());
+    setProductQuantity(querySnapshot.data().unit);
     setIsDataFetched(true);
     checkInWishlist();
     checkInCart();
@@ -93,24 +97,23 @@ function DetailScreen({ navigation, route }) {
   };
 
   const checkInCart = async () => {
-
-    try{
+    try {
       const q = query(
-        collection(db,"tbl_cart"),
-        where("userId","==",userId.current),
-        where("productId","==",plantId)
+        collection(db, "tbl_cart"),
+        where("userId", "==", userId.current),
+        where("productId", "==", plantId)
       );
 
       const querySnapshot = await getDocs(q);
 
       const isInCart = querySnapshot.docs.length > 0;
       setInCart(isInCart);
-    }catch(error){
+    } catch (error) {
       console.error("Error checking wishlist: ", error);
     }
 
     setShowCartButton(true);
-  }
+  };
 
   const handleWishlist = async () => {
     try {
@@ -143,20 +146,35 @@ function DetailScreen({ navigation, route }) {
     }
   };
 
+  const updateQuantity = async () => {
+    const docRef = doc(db, "tbl_plant_data", plantId);
+    try{
+      await updateDoc(docRef,{
+        unit:productQuantity - 1
+      });
+    }catch(error){
+      console.log("Not able to update",error);
+    }
+  
+    console.log("done")
+  };
+
   const handleAddToCart = async () => {
     setShowCartButton(false);
-      try{
-        await addDoc(collection(db, "tbl_cart"), {
-          userId: userId.current,
-          productId: plantId,
-          quantity: 1
-        });
-        setInCart(true);
-      }catch(error){
-        console.error("Error handling cart: ", error);
-      }
-      setShowCartButton(true);
+    try {
+      const doc = await addDoc(collection(db, "tbl_cart"), {
+        userId: userId.current,
+        productId: plantId,
+        quantity: 1,
+      });
+      updateQuantity();
+      setInCart(true);
+      setProductQuantity(productQuantity - 1);
+    } catch (error) {
+      console.error("Error handling cart: ", error);
     }
+    setShowCartButton(true);
+  };
 
   useEffect(() => {
     isUserLogin();
@@ -210,11 +228,9 @@ function DetailScreen({ navigation, route }) {
                 width: 350,
                 height: 350,
               }}
-              source={
-                {
-                  uri:value?.img
-                }
-              }
+              source={{
+                uri: value?.img,
+              }}
             />
           </View>
           <View style={[styles.itemTitle, styles.iosPadding]}>
@@ -237,7 +253,7 @@ function DetailScreen({ navigation, route }) {
                 },
               ]}
             >
-              Available: {value?.unit}
+              Available: {productQuantity}
             </Text>
           </View>
           <View style={[styles.desc, styles.iosPadding]}>
@@ -271,21 +287,32 @@ function DetailScreen({ navigation, route }) {
               </Text>
             </View>
             <View style={styles.aboutCard}>
-             <TouchableOpacity onPress={
-                ()=>{
-                  (value?.unit != 0 && !inCart) && handleAddToCart();
+              <TouchableOpacity
+                onPress={() => {
+                  value?.unit != 0 && !inCart && handleAddToCart();
+                }}
+                style={
+                  inCart || value?.unit == 0
+                    ? styles.addedToCartButton
+                    : styles.addToCartButton
                 }
-              } style={(inCart || value?.unit == 0 ? styles.addedToCartButton : styles.addToCartButton)}>
-              {
-                showCartButton ? <Text style={(inCart  ? styles.addedToCartText : styles.addToCartText)}>{
-                  value?.unit == "0" ?
-                  "Not Available" : (inCart ? "Added to cart" : "Add to cart")
-                }</Text> :
-                <ActivityIndicator size="small" color={COLORS.white}/>
-              }
-                
+              >
+                {showCartButton ? (
+                  <Text
+                    style={
+                      inCart ? styles.addedToCartText : styles.addToCartText
+                    }
+                  >
+                    {value?.unit == "0"
+                      ? "Not Available"
+                      : inCart
+                      ? "Added to cart"
+                      : "Add to cart"}
+                  </Text>
+                ) : (
+                  <ActivityIndicator size="small" color={COLORS.white} />
+                )}
               </TouchableOpacity>
-              
             </View>
           </View>
         </View>
@@ -424,7 +451,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.white,
     textTransform: "capitalize",
-  }
+  },
 });
 
 export default DetailScreen;
