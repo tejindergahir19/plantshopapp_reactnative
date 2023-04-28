@@ -15,12 +15,6 @@ import { db } from "../firebase";
 import {
   doc,
   getDoc,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  collection,
-  deleteDoc,
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
