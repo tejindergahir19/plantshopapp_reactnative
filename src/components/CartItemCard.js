@@ -28,7 +28,7 @@ const auth = getAuth();
 
 function CartItemCard(props) {
   const userId = useRef(null);
-  const { plantId,quantity, navigation } = props;
+  const { plantId,quantity, navigation,refreshCartList} = props;
 
   const [plantQuantity,setPlantQuantity] = useState(quantity);
 
@@ -64,10 +64,12 @@ function CartItemCard(props) {
     );
     const querySnapshot = await getDocs(q);
 
-    console.log(querySnapshot.docs[0].id);
+    // console.log(querySnapshot.docs[0].id);
 
     querySnapshot.docs[0] &&
     (await deleteDoc(doc(db, "tbl_cart", querySnapshot.docs[0].id)));
+
+    refreshCartList();
   }
 
   useEffect(() => {

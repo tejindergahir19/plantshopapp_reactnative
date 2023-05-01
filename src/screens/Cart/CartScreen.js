@@ -45,6 +45,8 @@ function CartScreen({ navigation }) {
   };
 
   const fetchCartList = async () => {
+    setCartList(null);
+    
     let tmpData = [];
 
     try {
@@ -96,7 +98,7 @@ function CartScreen({ navigation }) {
             showsVerticalScrollIndicator={false}
             data={cartList}
             renderItem={({ item }) => (
-              <CartItemCard navigation={navigation} plantId={item.productId} quantity={item.quantity} />
+              <CartItemCard refreshCartList={fetchCartList} navigation={navigation} plantId={item.productId} quantity={item.quantity} />
             )}
             ListEmptyComponent={
               <View
