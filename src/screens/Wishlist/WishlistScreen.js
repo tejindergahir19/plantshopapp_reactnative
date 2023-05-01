@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Platform,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  BackHandler
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -23,7 +24,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-function WishlistScreen({navigation}) {
+function WishlistScreen({navigation,route}) {
+
+  const refreshAll = route?.params?.refreshAll;
+
   const userId = useRef(null);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -69,6 +73,15 @@ function WishlistScreen({navigation}) {
 
   useEffect(() => {
     isUserLogin();
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      ()=>{
+        refreshAll();
+      }
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   return (
@@ -76,6 +89,7 @@ function WishlistScreen({navigation}) {
       <View style={[styles.header, styles.iosPadding]}>
         <TouchableOpacity
           onPress={() => {
+            refreshAll();
             navigation.goBack();
           }}
         >
@@ -126,7 +140,7 @@ function WishlistScreen({navigation}) {
       </View>
 
       <View style={styles.iosPadding}>
-        <BottomNavigation navigation={navigation} screen="wishlist" />
+        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="wishlist" />
       </View>
     </SafeAreaView>
   );

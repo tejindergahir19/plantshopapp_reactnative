@@ -276,7 +276,7 @@ function HomeScreen({ navigation }) {
           <HomeScreenItemLoader />
         </View>
       )}
-      <BottomNavigation navigation={navigation} screen="home" />
+      <BottomNavigation navigation={navigation} refreshAll={onRefresh} screen="home" />
     </SafeAreaView>
   );
 }

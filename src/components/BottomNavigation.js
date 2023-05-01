@@ -5,12 +5,13 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../constant/COLORS";
 
 function BottomNavigation(props) {
-  const { screen,navigation} = props;
+  const { screen,navigation,refreshAll} = props;
   return (
     <View style={styles.bottomNavigation}>
       <TouchableOpacity
         onPress={() => {
-            navigation.navigate("Home", { name: "Home" });
+          refreshAll()
+            navigation.navigate("Home",{refreshAll:refreshAll});
         }}
         style={styles.bottomNavigationButton}
       >
@@ -21,7 +22,7 @@ function BottomNavigation(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {
-            navigation.navigate("Wishlist", { name: "Wishlist" });
+            navigation.navigate("Wishlist",{refreshAll:refreshAll});
         }} style={styles.bottomNavigationButton}>
         <Icon
           style={styles.bottomNavigationIcon}
@@ -30,7 +31,7 @@ function BottomNavigation(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {
-            navigation.navigate("Alarm", { name: "Alarm" });
+            navigation.navigate("Alarm",{refreshAll:refreshAll});
         }}  style={styles.bottomNavigationButton}>
         <Icon
           style={styles.bottomNavigationIcon}
@@ -39,7 +40,7 @@ function BottomNavigation(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {
-            navigation.navigate("Account", { name: "Account" });
+            navigation.navigate("Account",{refreshAll:refreshAll});
         }}  style={styles.bottomNavigationButton}>
         <Icon
           style={styles.bottomNavigationIcon}
