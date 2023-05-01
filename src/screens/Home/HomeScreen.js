@@ -157,7 +157,7 @@ function HomeScreen({ navigation }) {
         <View style={styles.cart}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Cart", { name: "Cart" });
+              navigation.navigate("Cart",{refreshAll:onRefresh});
             }}
           >
             <Icon name="shopping-cart" size={32} color={COLORS.primary} />

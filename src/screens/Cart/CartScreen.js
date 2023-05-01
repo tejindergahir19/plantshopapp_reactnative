@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   FlatList,
+  BackHandler
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -21,7 +22,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-function CartScreen({ navigation }) {
+function CartScreen({ navigation, route }) {
+ 
+  const refreshAll = route?.params?.refreshAll;
+
   const userId = useRef(null);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -68,6 +72,16 @@ function CartScreen({ navigation }) {
 
   useEffect(() => {
     isUserLogin();
+
+   
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      ()=>{
+        refreshAll();
+      }
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   return (
@@ -75,6 +89,7 @@ function CartScreen({ navigation }) {
       <View style={[styles.header, styles.iosPadding]}>
         <TouchableOpacity
           onPress={() => {
+            refreshAll();
             navigation.goBack();
           }}
         >

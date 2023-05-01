@@ -9,7 +9,8 @@ import {
   Image,
   ActivityIndicator,
   Alert,
-  Vibration
+  Vibration,
+  BackHandler
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -181,6 +182,15 @@ function DetailScreen({ navigation, route }) {
 
   useEffect(() => {
     isUserLogin();
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      ()=>{
+        refreshAll();
+      }
+    );
+
+    return () => backHandler.remove();
   }, []);
 
   return (
