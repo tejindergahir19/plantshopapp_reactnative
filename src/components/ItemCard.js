@@ -32,7 +32,7 @@ function isDataPresent(arr, data) {
 }
 
 function ItemCard(props) {
-  const {value, navigation, userId, wishlist, cartList } = props;
+  const {value, navigation, userId, wishlist, cartList,refreshAll} = props;
 
   const plantId = value.id;
 
@@ -123,7 +123,7 @@ function ItemCard(props) {
     <TouchableOpacity
       key={value?.id}
       onPress={() => {
-        navigation.navigate("Detail", value?.id);
+        navigation.navigate("Detail",{plantId:value?.id,refreshAll:refreshAll});
       }}
       style={styles.itemCard}
     >

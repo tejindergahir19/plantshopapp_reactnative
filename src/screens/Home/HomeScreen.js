@@ -247,6 +247,8 @@ function HomeScreen({ navigation }) {
                   wishlist={wishlist}
                   userId={userId.current}
                   cartList={cartList}
+
+                  refreshAll={onRefresh}
                 />
               )}
               keyExtractor={(item) => item.id}

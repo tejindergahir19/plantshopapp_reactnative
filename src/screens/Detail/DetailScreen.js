@@ -37,7 +37,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
 
 function DetailScreen({ navigation, route }) {
-  const plantId = route?.params;
+  const plantId = route?.params?.plantId;
+  const refreshAll = route?.params?.refreshAll;
 
   const userId = useRef(null);
 
@@ -145,6 +146,7 @@ function DetailScreen({ navigation, route }) {
     } catch (error) {
       console.error("Error handling wishlist: ", error);
     }
+
   };
 
   const updateQuantity = async () => {
@@ -186,6 +188,7 @@ function DetailScreen({ navigation, route }) {
       <View style={[styles.header, styles.iosPadding]}>
         <TouchableOpacity
           onPress={() => {
+            refreshAll();
             navigation.goBack();
           }}
         >
