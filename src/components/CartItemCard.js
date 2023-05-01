@@ -15,6 +15,11 @@ import { db } from "../firebase";
 import {
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
+  collection,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -51,6 +56,20 @@ function CartItemCard(props) {
     setValue(querySnapshot.data());
   };
 
+  const removeFromCart = async () => {
+    const q = query(
+      collection(db, "tbl_cart"),
+      where("userId", "==", userId.current),
+      where("productId", "==", plantId)
+    );
+    const querySnapshot = await getDocs(q);
+
+    console.log(querySnapshot.docs[0].id);
+
+    querySnapshot.docs[0] &&
+    (await deleteDoc(doc(db, "tbl_cart", querySnapshot.docs[0].id)));
+  }
+
   useEffect(() => {
     isUserLogin();
   }, []);
@@ -83,7 +102,9 @@ function CartItemCard(props) {
           </View>
         </View>
         <View style={styles.addToWishlist}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>{
+            removeFromCart();
+          }}>
             <Icon name="close" color={COLORS.red} size={20} />
           </TouchableOpacity>
 

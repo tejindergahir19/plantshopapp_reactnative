@@ -9,6 +9,7 @@ import {
   FlatList,
   RefreshControl,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -174,7 +175,11 @@ function HomeScreen({ navigation }) {
               <Text style={{
                 color:COLORS.white,
                 fontWeight:"bold",
-              }}>{cartList?.length ?? "-"}</Text>
+              }}>{cartList?.length ?? 
+              <View style={{paddingVertical:5}}>
+              <ActivityIndicator size={"small"} color={COLORS.white} />
+              </View>
+              }</Text>
             </View>
           </TouchableOpacity>
         </View>
