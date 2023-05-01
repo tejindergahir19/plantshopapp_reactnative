@@ -47,6 +47,8 @@ function WishlistScreen({navigation}) {
   };
 
   const fetchWishlist = async () => {
+    setWishlist(null);
+
     let tmpData = [];
 
     try {
@@ -97,7 +99,7 @@ function WishlistScreen({navigation}) {
             showsVerticalScrollIndicator={false}
             data={wishlist}
             renderItem={({ item }) => (
-              <WishlistCard navigation={navigation} plantId={item} />
+              <WishlistCard refreshWishlist={fetchWishlist} navigation={navigation} plantId={item} />
             )}
 
             refreshControl={

@@ -32,7 +32,7 @@ function WishlistCard(props) {
 
   const userId = useRef(null);
 
-  const { plantId, navigation } = props;
+  const { plantId, navigation,refreshWishlist} = props;
 
   const [inWishlist, setInWishlist] = useState(true);
   const [showWishlistIcon, setShowWishlistIcon] = useState(true);
@@ -84,6 +84,8 @@ function WishlistCard(props) {
           (await deleteDoc(doc(db, "tbl_wishlist", querySnapshot.docs[0].id)));
 
         setInWishlist(false);
+
+        refreshWishlist();
       }
 
       setShowWishlistIcon(true);
