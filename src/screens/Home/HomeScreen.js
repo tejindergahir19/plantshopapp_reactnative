@@ -60,7 +60,7 @@ function HomeScreen({ navigation }) {
   const onRefresh = async () => {
     setIsCategoryLoaded(false);
     setIsCardsLoaded(false);
-    setRefreshing(false);
+    setRefreshing(true);
     await fetchWishlist();
     await fetchCartList();
     setRefreshing(false);
