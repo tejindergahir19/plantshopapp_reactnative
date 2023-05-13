@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Platform,
   FlatList,
-  BackHandler
+  BackHandler,
+  RefreshControl
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -17,7 +18,7 @@ import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 import CartItemCard from "../../components/CartItemCard";
 
 import { db } from "../../firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs,query, where } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
@@ -32,9 +33,19 @@ function CartScreen({ navigation, route }) {
 
   const [cartList, setCartList] = useState(null);
 
+  //bill details
+  const subTotal = useRef(0);
+  const delivery = useRef(30);
+
+  const [showSubtotal,setShowSubtotal] = useState(0);
+  const [showDelivery,setShowDelivery] = useState(delivery.current);
+  const [showTotal,setShowTotal] = useState(0);
+
   const onRefresh = async () => {
     await fetchCartList();
     setRefreshing(false);
+    subTotal.current = 0;
+    refreshAll();
   };
 
   const isUserLogin = async () => {
@@ -64,11 +75,16 @@ function CartScreen({ navigation, route }) {
         tmpData.push(doc.data());
       });
     } catch (error) {
-      console.error("Error fetching wishlist: ", error);
+      console.error("Error fetching Cart list: ", error);
     }
-
     setCartList(tmpData);
   };
+
+  const updateSubTotal = (amount) => {
+    subTotal.current += amount;
+    setShowSubtotal(subTotal.current);
+    setShowTotal(subTotal.current + delivery.current);
+  }
 
   useEffect(() => {
     isUserLogin();
@@ -113,8 +129,12 @@ function CartScreen({ navigation, route }) {
             showsVerticalScrollIndicator={false}
             data={cartList}
             renderItem={({ item }) => (
-              <CartItemCard refreshCartList={fetchCartList} navigation={navigation} plantId={item.productId} quantity={item.quantity} />
+              <CartItemCard updateSubTotal={updateSubTotal} refreshCartList={fetchCartList} refreshAll={refreshAll} navigation={navigation} plantId={item.productId} quantity={item.quantity}  />
             )}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+
             ListEmptyComponent={
               <View
                 style={{
@@ -143,15 +163,15 @@ function CartScreen({ navigation, route }) {
       <View style={[styles.totalAmount, styles.iosPadding]}>
         <View style={styles.subTotal}>
           <Text style={styles.subTotalText}>Sub total</Text>
-          <Text style={styles.subTotalAmountText}>1080 $</Text>
+          <Text style={styles.subTotalAmountText}>{showSubtotal} ₹</Text>
         </View>
         <View style={styles.delivery}>
           <Text style={styles.deliveryText}>Delivery</Text>
-          <Text style={styles.deliveryAmountText}>3 $</Text>
+          <Text style={styles.deliveryAmountText}>{(subTotal.current != 0 ? showDelivery : 0)} ₹</Text>
         </View>
         <View style={styles.total}>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmountText}>1083 $</Text>
+          <Text style={styles.totalAmountText}>{(subTotal.current != 0 ? (showTotal) : 0)} ₹</Text>
         </View>
 
         <TouchableOpacity style={styles.checkOutButton}>

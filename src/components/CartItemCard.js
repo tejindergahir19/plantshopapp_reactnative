@@ -28,11 +28,14 @@ const auth = getAuth();
 
 function CartItemCard(props) {
   const userId = useRef(null);
-  const { plantId,quantity, navigation,refreshCartList} = props;
+  const { plantId,quantity, navigation,updateSubTotal,refreshCartList,refreshAll} = props;
 
+  const itemQuantity = useRef(quantity);
   const [plantQuantity,setPlantQuantity] = useState(quantity);
 
   const [value, setValue] = useState(null);
+
+  const price = useRef(0);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -49,12 +52,28 @@ function CartItemCard(props) {
     let querySnapshot;
     try {
       querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
+
     } catch (error) {
       console.error("Error fetching data: ", error);
       return;
     }
     setValue(querySnapshot.data());
+    
+    price.current = Number(querySnapshot.data().price);
+
+    updateSubTotal(price.current * itemQuantity.current);
   };
+
+  const addItem = () => {
+    setPlantQuantity(itemQuantity.current += 1);
+    updateSubTotal(price.current);
+  }
+
+  const subItem = () => {
+    setPlantQuantity((itemQuantity.current != 1) ? itemQuantity.current -= 1 : itemQuantity.current);
+    
+    updateSubTotal(price.current * -1);
+  }
 
   const removeFromCart = async () => {
     const q = query(
@@ -63,8 +82,6 @@ function CartItemCard(props) {
       where("productId", "==", plantId)
     );
     const querySnapshot = await getDocs(q);
-
-    // console.log(querySnapshot.docs[0].id);
 
     querySnapshot.docs[0] &&
     (await deleteDoc(doc(db, "tbl_cart", querySnapshot.docs[0].id)));
@@ -79,7 +96,7 @@ function CartItemCard(props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Detail", value);
+        navigation.navigate("Detail",{plantId:plantId,refreshAll:refreshAll});
       }}
       style={styles.itemCard}
     >
@@ -113,7 +130,7 @@ function CartItemCard(props) {
           <View style={styles.quantityMeasure}>
             <TouchableOpacity onPress={
               ()=>{
-                setPlantQuantity(plantQuantity - 1);
+                (itemQuantity.current != 1) && subItem();
               }
             } style={styles.sub}>
               <Text style={styles.subText}>-</Text>
@@ -123,7 +140,7 @@ function CartItemCard(props) {
 
             <TouchableOpacity onPress={
               ()=>{
-                setPlantQuantity(plantQuantity + 1);
+                addItem();
               }
             } style={styles.add}>
               <Text style={styles.addText}>+</Text>
@@ -187,7 +204,7 @@ const styles = StyleSheet.create({
   },
   sub:{
     backgroundColor:COLORS.primary,
-    borderRadius:50,
+    borderRadius:6,
     marginRight:12,
     justifyContent:"center",
     alignItems:"center",
@@ -200,7 +217,7 @@ const styles = StyleSheet.create({
   },
   add:{
     backgroundColor:COLORS.primary,
-    borderRadius:50,
+    borderRadius:6,
     marginLeft:12,
     justifyContent:"center",
     alignItems:"center",
@@ -210,6 +227,10 @@ const styles = StyleSheet.create({
   addText:{
     color:COLORS.white,
     fontSize:16,
+  },
+  quantity:{
+    fontSize:16,
+    marginTop:3
   }
 });
 
