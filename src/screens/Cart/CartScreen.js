@@ -45,6 +45,8 @@ function CartScreen({ navigation, route }) {
     await fetchCartList();
     setRefreshing(false);
     subTotal.current = 0;
+    setShowSubtotal(subTotal.current);
+    setShowTotal(subTotal.current + delivery.current);
     refreshAll();
   };
 
@@ -129,7 +131,7 @@ function CartScreen({ navigation, route }) {
             showsVerticalScrollIndicator={false}
             data={cartList}
             renderItem={({ item }) => (
-              <CartItemCard updateSubTotal={updateSubTotal} refreshCartList={fetchCartList} refreshAll={refreshAll} navigation={navigation} plantId={item.productId} quantity={item.quantity}  />
+              <CartItemCard updateSubTotal={updateSubTotal} refreshCartList={onRefresh} refreshAll={refreshAll} navigation={navigation} plantId={item.productId} quantity={item.quantity}  />
             )}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

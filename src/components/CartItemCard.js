@@ -1,4 +1,4 @@
-import React,{useState,useEffect,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   TouchableOpacity,
   Text,
@@ -6,6 +6,9 @@ import {
   StyleSheet,
   Image,
   Platform,
+  Alert,
+  Vibration,
+  Pressable
 } from "react-native";
 import COLORS from "../constant/COLORS";
 
@@ -20,6 +23,7 @@ import {
   where,
   collection,
   deleteDoc,
+  updateDoc
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -28,10 +32,10 @@ const auth = getAuth();
 
 function CartItemCard(props) {
   const userId = useRef(null);
-  const { plantId,quantity, navigation,updateSubTotal,refreshCartList,refreshAll} = props;
+  const { plantId, quantity, navigation, updateSubTotal, refreshCartList, refreshAll } = props;
 
   const itemQuantity = useRef(quantity);
-  const [plantQuantity,setPlantQuantity] = useState(quantity);
+  const [plantQuantity, setPlantQuantity] = useState(quantity);
 
   const [value, setValue] = useState(null);
 
@@ -58,21 +62,58 @@ function CartItemCard(props) {
       return;
     }
     setValue(querySnapshot.data());
-    
+
     price.current = Number(querySnapshot.data().price);
 
     updateSubTotal(price.current * itemQuantity.current);
   };
 
   const addItem = () => {
-    setPlantQuantity(itemQuantity.current += 1);
-    updateSubTotal(price.current);
+    if (value?.unit != 0) {
+      setPlantQuantity(itemQuantity.current += 1);
+      updateSubTotal(price.current);
+      updateQuantity("add");
+    } else {
+      Alert.alert("No More Plants Available !");
+    }
+    Vibration.vibrate();
   }
 
   const subItem = () => {
     setPlantQuantity((itemQuantity.current != 1) ? itemQuantity.current -= 1 : itemQuantity.current);
-    
+
+
     updateSubTotal(price.current * -1);
+    updateQuantity("sub");
+
+    Vibration.vibrate();
+  }
+
+  const updateQuantity = async (type) => {
+
+    let docRef = doc(db, "tbl_plant_data", plantId);
+    try {
+      await updateDoc(docRef, {
+        unit: (type == "add") ? value?.unit - 1 : value?.unit + 1
+      });
+    } catch (error) {
+      console.log("Not able to update", error);
+    }
+
+    (type == "add") ? value.unit -= 1 : value.unit += 1;
+
+    console.log(value.unit);
+  };
+
+  const completeUpdateQuantity = async () => {
+    let docRef = doc(db, "tbl_plant_data", plantId);
+    try {
+      await updateDoc(docRef, {
+        unit: value?.unit + itemQuantity.current
+      });
+    } catch (error) {
+      console.log("Not able to update", error);
+    }
   }
 
   const removeFromCart = async () => {
@@ -84,8 +125,9 @@ function CartItemCard(props) {
     const querySnapshot = await getDocs(q);
 
     querySnapshot.docs[0] &&
-    (await deleteDoc(doc(db, "tbl_cart", querySnapshot.docs[0].id)));
+      (await deleteDoc(doc(db, "tbl_cart", querySnapshot.docs[0].id)));
 
+    completeUpdateQuantity();
     refreshCartList();
   }
 
@@ -96,7 +138,7 @@ function CartItemCard(props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Detail",{plantId:plantId,refreshAll:refreshAll});
+        navigation.navigate("Detail", { plantId: plantId, refreshAll: refreshAll });
       }}
       style={styles.itemCard}
     >
@@ -121,25 +163,30 @@ function CartItemCard(props) {
           </View>
         </View>
         <View style={styles.addToWishlist}>
-          <TouchableOpacity onPress={()=>{
+          <TouchableOpacity onPress={() => {
             removeFromCart();
           }}>
-            <Icon name="close" color={COLORS.red} size={20} />
+            <Icon name="close" color={COLORS.red} size={24} />
           </TouchableOpacity>
 
           <View style={styles.quantityMeasure}>
-            <TouchableOpacity onPress={
-              ()=>{
-                (itemQuantity.current != 1) && subItem();
+          {
+            (itemQuantity.current != 1) ? <TouchableOpacity onPress={
+              () => {
+                subItem();
               }
             } style={styles.sub}>
               <Text style={styles.subText}>-</Text>
-            </TouchableOpacity>
-
+            </TouchableOpacity> :
+            <Pressable style={styles.subDisable}>
+              <Text style={styles.subText}>-</Text>
+            </Pressable>
+          }
+            
             <Text style={styles.quantity}>{(plantQuantity < 10) && 0}{plantQuantity}</Text>
 
             <TouchableOpacity onPress={
-              ()=>{
+              () => {
                 addItem();
               }
             } style={styles.add}>
@@ -199,38 +246,48 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  quantityMeasure:{
-    flexDirection:"row",
+  quantityMeasure: {
+    flexDirection: "row",
   },
-  sub:{
-    backgroundColor:COLORS.primary,
-    borderRadius:6,
-    marginRight:12,
-    justifyContent:"center",
-    alignItems:"center",
-    width:26,
-    height:26
+  sub: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 6,
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 26,
+    height: 26
   },
-  subText:{
-    color:COLORS.white,
-    fontSize:18,
+  subDisable:{
+    backgroundColor: COLORS.primary,
+    borderRadius: 6,
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 26,
+    height: 26,
+    opacity:0.3
   },
-  add:{
-    backgroundColor:COLORS.primary,
-    borderRadius:6,
-    marginLeft:12,
-    justifyContent:"center",
-    alignItems:"center",
-    width:26,
-    height:26
+  subText: {
+    color: COLORS.white,
+    fontSize: 18,
   },
-  addText:{
-    color:COLORS.white,
-    fontSize:16,
+  add: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 6,
+    marginLeft: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 26,
+    height: 26
   },
-  quantity:{
-    fontSize:16,
-    marginTop:3
+  addText: {
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  quantity: {
+    fontSize: 16,
+    marginTop: Platform.OS == "ios" ? 3 : 0
   }
 });
 
