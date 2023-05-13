@@ -101,8 +101,6 @@ function CartItemCard(props) {
     }
 
     (type == "add") ? value.unit -= 1 : value.unit += 1;
-
-    console.log(value.unit);
   };
 
   const completeUpdateQuantity = async () => {
