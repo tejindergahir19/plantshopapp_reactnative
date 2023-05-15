@@ -113,7 +113,7 @@ function WishlistScreen({navigation,route}) {
             showsVerticalScrollIndicator={false}
             data={wishlist}
             renderItem={({ item }) => (
-              <WishlistCard refreshWishlist={fetchWishlist} navigation={navigation} plantId={item} />
+              <WishlistCard refreshAll={refreshAll} refreshWishlist={fetchWishlist} navigation={navigation} plantId={item} />
             )}
 
             refreshControl={

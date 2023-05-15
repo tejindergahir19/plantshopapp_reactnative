@@ -80,6 +80,11 @@ export default function App() {
           component={WishlistScreen}
           options={{ title: "Wishlist", headerShown: false }}
         />
+         <Stack.Screen
+          name="Detail"
+          component={DetailScreen}
+          options={{ title: "Detail", headerShown: false }}
+        />
         <Stack.Screen
           name="Alarm"
           component={AlarmScreen}
@@ -104,11 +109,6 @@ export default function App() {
           name="Cart"
           component={CartScreen}
           options={{ title: "Cart", headerShown: false }}
-        />
-        <Stack.Screen
-          name="Detail"
-          component={DetailScreen}
-          options={{ title: "Detail", headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

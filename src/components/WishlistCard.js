@@ -32,7 +32,7 @@ function WishlistCard(props) {
 
   const userId = useRef(null);
 
-  const { plantId, navigation,refreshWishlist} = props;
+  const {plantId, navigation,refreshWishlist, refreshAll} = props;
 
   const [inWishlist, setInWishlist] = useState(true);
   const [showWishlistIcon, setShowWishlistIcon] = useState(true);
@@ -101,7 +101,10 @@ function WishlistCard(props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Detail",plantId);
+        navigation.navigate("Detail", {
+          plantId: plantId,
+          refreshAll: refreshAll,
+        });
       }}
       style={styles.itemCard}
     >
