@@ -89,7 +89,9 @@ function AccountScreen({navigation,route}) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-        <TouchableOpacity style={styles.accountTabs}>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate("Profile",{refreshAll:refreshAll});
+        }}  style={styles.accountTabs}>
           <View style={styles.accountInnerTabs}>
           <Icon
               name="person"
@@ -123,7 +125,9 @@ function AccountScreen({navigation,route}) {
               size={24}
             />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.accountTabs}>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate("Order",{refreshAll:refreshAll});
+        }} style={styles.accountTabs}>
           <View style={styles.accountInnerTabs}>
           <Icon
               name="logo-dropbox"

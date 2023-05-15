@@ -19,7 +19,7 @@ import {getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-function AlarmScreen({navigation,route}) {
+function OrderScreen({navigation,route}) {
 
   const refreshAll = route?.params?.refreshAll;
 
@@ -60,7 +60,7 @@ function AlarmScreen({navigation,route}) {
         >
           <Icon name="arrow-back" size={32} color={COLORS.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Water Alert</Text>
+        <Text style={styles.headerTitle}>Orders</Text>
         <View>
           <TouchableOpacity>
             <Icon
@@ -144,7 +144,7 @@ function AlarmScreen({navigation,route}) {
       </View>
 
       <View style={styles.iosPadding}>
-        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="alarm" />
+        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="order" />
       </View>
     </SafeAreaView>
   );
@@ -189,4 +189,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AlarmScreen;
+export default OrderScreen;

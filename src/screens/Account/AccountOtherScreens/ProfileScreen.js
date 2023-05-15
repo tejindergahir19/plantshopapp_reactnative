@@ -6,15 +6,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  FlatList,
-  RefreshControl,
   BackHandler
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
-import COLORS from "../../constant/COLORS";
-import BottomNavigation from "../../components/BottomNavigation";
+import COLORS from "../../../constant/COLORS";
+import BottomNavigation from "../../../components/BottomNavigation";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -61,7 +59,7 @@ function ProfileScreen({navigation,route}) {
         >
           <Icon name="arrow-back" size={32} color={COLORS.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Account</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
         <View>
           <TouchableOpacity>
             <Icon
@@ -122,10 +120,6 @@ function ProfileScreen({navigation,route}) {
               size={24}
             />
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.iosPadding}>
-        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="account" />
       </View>
     </SafeAreaView>
   );
