@@ -39,13 +39,15 @@ function HomeScreen({ navigation }) {
 
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
-  
+
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
   const [plantData, setPlantData] = useState(null);
-  const [tmpPlantData,setTmpPlantData] = useState(null);
+  const [tmpPlantData, setTmpPlantData] = useState(null);
+
+  const [searchText, setSearchText] = useState("");
 
   const [wishlist, setWishlist] = useState(null);
-  const [cartList,setCartList] = useState(null);
+  const [cartList, setCartList] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -59,14 +61,26 @@ function HomeScreen({ navigation }) {
   };
 
   const handleSearch = (search) => {
-      (search != "") ? (
-        setTmpPlantData(plantData.filter((item)=>(
-          item?.data?.category.toLowerCase().includes(search.toLowerCase()) || item?.data?.description.toLowerCase().includes(search.toLowerCase()) || item?.data?.plantType.toLowerCase().includes(search.toLowerCase()) || item?.data?.price.toLowerCase().includes(search.toLowerCase()) || item?.data?.size.toLowerCase().includes(search.toLowerCase()) || item?.data?.title.toLowerCase().includes(search.toLowerCase())
-        )))
-      ) : 
-      setTmpPlantData(null)
-  }
-
+    search != ""
+      ? setTmpPlantData(
+          plantData.filter(
+            (item) =>
+              item?.data?.category
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+              item?.data?.description
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+              item?.data?.plantType
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+              item?.data?.price.toLowerCase().includes(search.toLowerCase()) ||
+              item?.data?.size.toLowerCase().includes(search.toLowerCase()) ||
+              item?.data?.title.toLowerCase().includes(search.toLowerCase())
+          )
+        )
+      : setTmpPlantData(null);
+  };
 
   const onRefresh = async () => {
     setIsCategoryLoaded(false);
@@ -116,7 +130,7 @@ function HomeScreen({ navigation }) {
       console.error("Error fetching wishlist: ", error);
     }
     setCartList(tmpData);
-  }
+  };
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -168,42 +182,64 @@ function HomeScreen({ navigation }) {
         <View style={styles.cart}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Cart",{refreshAll:onRefresh});
+              navigation.navigate("Cart", { refreshAll: onRefresh });
             }}
           >
             <Icon name="shopping-cart" size={32} color={COLORS.primary} />
-            <View style={{
-              backgroundColor:COLORS.primary,
-              justifyContent:"center",
-              alignItems:"center",
-              borderRadius:50,
-              position:"absolute",
-              right:-2,
-              top:-8,
-              paddingHorizontal:5,
-              paddingVertical:Platform.OS == "ios" ? 5 : 0
-            }}>
-              <Text style={{
-                color:COLORS.white,
-                fontWeight:"bold",
-              }}>{cartList?.length ?? 
-              <View style={{paddingVertical:5}}>
-              <ActivityIndicator size={"small"} color={COLORS.white} />
-              </View>
-              }</Text>
+            <View
+              style={{
+                backgroundColor: COLORS.primary,
+                justifyContent: "center",
+                alignItems: "center",
+                borderRadius: 50,
+                position: "absolute",
+                right: -2,
+                top: -8,
+                paddingHorizontal: 5,
+                paddingVertical: Platform.OS == "ios" ? 5 : 0,
+              }}
+            >
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontWeight: "bold",
+                }}
+              >
+                {cartList?.length ?? (
+                  <View style={{ paddingVertical: 5 }}>
+                    <ActivityIndicator size={"small"} color={COLORS.white} />
+                  </View>
+                )}
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.search}>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Icon name="search" size={32} color={COLORS.primary} />
+          {tmpPlantData ? (
+            <Icon
+              name="close"
+              onPress={() => {
+                handleSearch("");
+                setSearchText("");
+              }}
+              size={32}
+              color={COLORS.primary}
+            />
+          ) : (
+            <Icon name="search" size={32} color={COLORS.primary} />
+          )}
         </View>
         <View>
           <TextInput
-            onChangeText={(newText)=>handleSearch(newText)}
+            onChangeText={(newText) => {
+              setSearchText(newText);
+              handleSearch(newText);
+            }}
             style={{ height: 40, width: 280 }}
             placeholder="Find your favorite plants..."
+            value={searchText}
           />
         </View>
       </View>
@@ -251,14 +287,15 @@ function HomeScreen({ navigation }) {
               columnWrapperStyle={{
                 columnGap: 10,
               }}
-              data={tmpPlantData ? (tmpPlantData) : 
-              (
-                plantData.filter((item) => 
-                ((categoryIndex === 0) ? 
-                item?.data?.plantType !== categoryData[categoryIndex]
-                : item?.data?.plantType === categoryData[categoryIndex])
-              )
-              )}
+              data={
+                tmpPlantData
+                  ? tmpPlantData
+                  : plantData.filter((item) =>
+                      categoryIndex === 0
+                        ? item?.data?.plantType !== categoryData[categoryIndex]
+                        : item?.data?.plantType === categoryData[categoryIndex]
+                    )
+              }
               renderItem={({ item }) => (
                 <ItemCard
                   navigation={navigation}
@@ -266,25 +303,29 @@ function HomeScreen({ navigation }) {
                   wishlist={wishlist}
                   userId={userId.current}
                   cartList={cartList}
-
                   refreshAll={onRefresh}
                 />
               )}
               keyExtractor={(item) => item.id}
               numColumns={2}
               initialNumToRender={2}
-
               ListEmptyComponent={
-                <View style={{
-                  flex:1,
-                  height:240,
-                  justifyContent:"flex-end",
-                  alignItems:"center",
-                }}>
-                  <Text style={{
-                    fontSize:16,
-                    color:COLORS.caption
-                  }}>No Records Found</Text>
+                <View
+                  style={{
+                    flex: 1,
+                    height: 240,
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: COLORS.caption,
+                    }}
+                  >
+                    No Records Found
+                  </Text>
                 </View>
               }
             />
@@ -295,7 +336,11 @@ function HomeScreen({ navigation }) {
           <HomeScreenItemLoader />
         </View>
       )}
-      <BottomNavigation navigation={navigation} refreshAll={onRefresh} screen="home" />
+      <BottomNavigation
+        navigation={navigation}
+        refreshAll={onRefresh}
+        screen="home"
+      />
     </SafeAreaView>
   );
 }
