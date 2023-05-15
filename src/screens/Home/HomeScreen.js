@@ -39,9 +39,10 @@ function HomeScreen({ navigation }) {
 
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
-
+  
   const [isCardsLoaded, setIsCardsLoaded] = useState(false);
   const [plantData, setPlantData] = useState(null);
+  const [tmpPlantData,setTmpPlantData] = useState(null);
 
   const [wishlist, setWishlist] = useState(null);
   const [cartList,setCartList] = useState(null);
@@ -56,6 +57,16 @@ function HomeScreen({ navigation }) {
       }
     });
   };
+
+  const handleSearch = (search) => {
+      (search != "") ? (
+        setTmpPlantData(plantData.filter((item)=>(
+          item?.data?.category.toLowerCase().includes(search.toLowerCase()) || item?.data?.description.toLowerCase().includes(search.toLowerCase()) || item?.data?.plantType.toLowerCase().includes(search.toLowerCase()) || item?.data?.price.toLowerCase().includes(search.toLowerCase()) || item?.data?.size.toLowerCase().includes(search.toLowerCase()) || item?.data?.title.toLowerCase().includes(search.toLowerCase())
+        )))
+      ) : 
+      setTmpPlantData(null)
+  }
+
 
   const onRefresh = async () => {
     setIsCategoryLoaded(false);
@@ -190,6 +201,7 @@ function HomeScreen({ navigation }) {
         </View>
         <View>
           <TextInput
+            onChangeText={(newText)=>handleSearch(newText)}
             style={{ height: 40, width: 280 }}
             placeholder="Find your favorite plants..."
           />
@@ -239,7 +251,14 @@ function HomeScreen({ navigation }) {
               columnWrapperStyle={{
                 columnGap: 10,
               }}
-              data={plantData}
+              data={tmpPlantData ? (tmpPlantData) : 
+              (
+                plantData.filter((item) => 
+                ((categoryIndex === 0) ? 
+                item?.data?.plantType !== categoryData[categoryIndex]
+                : item?.data?.plantType === categoryData[categoryIndex])
+              )
+              )}
               renderItem={({ item }) => (
                 <ItemCard
                   navigation={navigation}
