@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   StyleSheet,
+  Keyboard,
   View,
   TextInput,
   TouchableOpacity,
@@ -32,6 +33,8 @@ const auth = getAuth();
 
 function HomeScreen({ navigation }) {
   const userId = useRef(null);
+
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -170,6 +173,17 @@ function HomeScreen({ navigation }) {
 
   useEffect(() => {
     isUserLogin();
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardStatus(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardStatus(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
   }, []);
 
   return (
@@ -336,11 +350,13 @@ function HomeScreen({ navigation }) {
           <HomeScreenItemLoader />
         </View>
       )}
-      <BottomNavigation
-        navigation={navigation}
-        refreshAll={onRefresh}
-        screen="home"
-      />
+      {!keyboardStatus && (
+        <BottomNavigation
+          navigation={navigation}
+          refreshAll={onRefresh}
+          screen="home"
+        />
+      )}
     </SafeAreaView>
   );
 }
