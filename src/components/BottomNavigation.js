@@ -22,15 +22,6 @@ function BottomNavigation(props) {
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {
-            navigation.navigate("Wishlist",{refreshAll:refreshAll});
-        }} style={styles.bottomNavigationButton}>
-        <Icon
-          style={styles.bottomNavigationIcon}
-          name={screen == "wishlist" ? "heart" : "heart-outline"}
-          size={30}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => {
             navigation.navigate("Alarm",{refreshAll:refreshAll});
         }}  style={styles.bottomNavigationButton}>
         <Icon
@@ -39,6 +30,16 @@ function BottomNavigation(props) {
           size={30}
         />
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => {
+            navigation.navigate("Order",{refreshAll:refreshAll});
+        }} style={styles.bottomNavigationButton}>
+        <Icon
+          style={styles.bottomNavigationIcon}
+          name={screen == "order" ? "albums" : "albums-outline"}
+          size={30}
+        />
+      </TouchableOpacity>
+     
       <TouchableOpacity onPress={() => {
             navigation.navigate("Account",{refreshAll:refreshAll});
         }}  style={styles.bottomNavigationButton}>

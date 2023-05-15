@@ -74,9 +74,6 @@ export default function App() {
           component={WelcomeScreen}
           options={{ title: "Welcome", headerShown: false }}
         />
-
-       
-
         <Stack.Screen
           name="Wishlist"
           component={WishlistScreen}

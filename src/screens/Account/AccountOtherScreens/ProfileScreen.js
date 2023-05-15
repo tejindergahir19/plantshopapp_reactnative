@@ -16,11 +16,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import { signOut,getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
-function AccountScreen({navigation,route}) {
+function ProfileScreen({navigation,route}) {
 
   const refreshAll = route?.params?.refreshAll;
 
@@ -35,16 +35,6 @@ function AccountScreen({navigation,route}) {
         navigation.navigate("Login", { name: "Login" });
       }
     });
-  };
-
-  const logout = () => {
-      signOut(auth).then(() => {
-        navigation.navigate("Login", { name: "Login" });
-      }).catch((error) => {
-        console.log("Error not able to signout");
-        Alert("Not able to LogOut at this moment !");
-        Vibration.vibrate();
-      });
   };
 
   useEffect(() => {
@@ -76,13 +66,8 @@ function AccountScreen({navigation,route}) {
           <TouchableOpacity>
             <Icon
               name="log-out-outline"
-              color={COLORS.red}
+              color={COLORS.primaryBackgroundColor}
               size={24}
-
-             onPress={()=>{
-              logout();
-              
-             }}
             />
           </TouchableOpacity>
         </View>
@@ -98,24 +83,6 @@ function AccountScreen({navigation,route}) {
             />
 
             <Text style={styles.accountInnerTabsText}>Profile</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-            navigation.navigate("Wishlist",{refreshAll:refreshAll});
-        }} style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="heart"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Wishlist</Text>
           </View>
           <Icon
               name="caret-forward"
@@ -139,12 +106,10 @@ function AccountScreen({navigation,route}) {
               size={24}
             />
         </TouchableOpacity>
-        
-        
         <TouchableOpacity style={styles.accountTabs}>
           <View style={styles.accountInnerTabs}>
           <Icon
-              name="chatbubble-ellipses"
+              name="logo-dropbox"
               color={COLORS.black}
               size={24}
             />
@@ -205,4 +170,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AccountScreen;
+export default ProfileScreen;

@@ -138,10 +138,6 @@ function WishlistScreen({navigation,route}) {
           <WhishlistScreenLoader />
         )}
       </View>
-
-      <View style={styles.iosPadding}>
-        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="wishlist" />
-      </View>
     </SafeAreaView>
   );
 }
