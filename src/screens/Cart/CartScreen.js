@@ -252,12 +252,18 @@ function CartScreen({ navigation, route }) {
             {subTotal.current != 0 ? showDelivery : 0} ₹
           </Text>
         </View>
+        
         <View style={styles.total}>
           <Text style={styles.totalText}>Total</Text>
           <Text style={styles.totalAmountText}>
             {subTotal.current != 0 ? showTotal : 0} ₹
           </Text>
         </View>
+        <Text style={{
+          color:COLORS.primary,
+          marginTop:8,
+          fontSize:12
+        }}>Payment: Cash on Delivery / PayOnline on Delivery</Text>
 
         {cartList != 0 ? (
           <TouchableOpacity
