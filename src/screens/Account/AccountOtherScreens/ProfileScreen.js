@@ -13,19 +13,24 @@ import {
   Button,
   Alert,
   Vibration,
+  ActivityIndicator,
 } from "react-native";
+
+import { db } from "../../../firebase";
+import {
+  getDocs,
+  query,
+  where,
+  collection,
+  updateDoc,
+  doc
+} from "firebase/firestore";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../../constant/COLORS";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  updateProfile,
-  updatePhoneNumber,
-  updateEmail,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
@@ -34,56 +39,105 @@ function ProfileScreen({ navigation, route }) {
 
   const userId = useRef(null);
 
+  const [isUserDataExists, setIsUserDataExists] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
+  const [updatingLoader, setUpdatingLoader] = useState(false);
 
   //form data
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [address, setAddress] = useState(null);
+
+  const [errorText, setErrorText] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
 
-        setName(user?.displayName?.split("::")[0]);
         setEmail(user?.email);
-        setPhone(user?.displayName?.split("::")[1]);
-        setAddress(user?.photoURL);
 
-        (user?.displayName?.split("::")[0] ?? setIsEnabled(true));
-        (user?.displayName?.split("::")[1] ?? setIsEnabled(true));
-        (user?.photoURL ?? setIsEnabled(true));
+        checkUserDataExists();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
     });
   };
 
-  const UpdateProfileData = () => {
-    updateProfile(auth.currentUser, {
-      displayName: name + "::" + phone,
-      photoURL: address,
-    })
-      .then(() => {
-        updateEmail(auth.currentUser, email)
-        .then(() => {
-          Alert.alert("Profile Updated !");
-          Vibration.vibrate();
-          navigation.navigate("Account",{refreshAll:refreshAll});
-        })
-        .catch((error) => {
-          console.log("Error updating email data !", error);
-        });
-      })
-      .catch((error) => {
-        console.log("Error updating profile data !", error);
-      });
+  const checkUserDataExists = async () => {
+    try {
+      const q = query(
+        collection(db, "tbl_user"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
 
-   
+      setIsUserDataExists(querySnapshot.docs.length > 0);
+      setIsEnabled(!(querySnapshot.docs.length > 0));
+
+      if (querySnapshot.docs.length > 0) {
+        setName(querySnapshot.docs[0].data().userName);
+        setPhone(querySnapshot.docs[0].data().userPhone);
+        setAddress(querySnapshot.docs[0].data().userAddress);
+      }
+    } catch (error) {
+      console.error("Error checking user: ", error);
+    }
+  };
+
+  const UpdateProfileData = async () => {
+    setUpdatingLoader(true);
+    setErrorText(null);
+
+    !(name != null && phone != null && address != null) &&
+      setErrorText("All fields are required !");
+
+    if (isUserDataExists) {
+      
+      const q = query(
+        collection(db, "tbl_user"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      let docRef = doc(db, "tbl_user", querySnapshot?.docs[0]?.id);
+
+      try {
+        name != null &&
+        phone != null &&
+        address != null && 
+        (
+          await updateDoc(docRef, {
+            userName: name,
+            userPhone: phone,
+            userAddress: address,
+          })
+        )
+        
+      } catch (error) {
+        console.log("Not able to update", error);
+      }
+    } else {
+      name != null &&
+        phone != null &&
+        address != null &&
+        (await addDoc(collection(db, "tbl_user"), {
+          userId: userId.current,
+          userName: name,
+          userPhone: phone,
+          userAddress: address,
+        }));
+    }
+
+    setUpdatingLoader(false);
+
+    Alert.alert("Profile Updated !");
+    Vibration.vibrate();
+
+    navigation.navigate("Account", { refreshAll: refreshAll });
   };
 
   useEffect(() => {
@@ -150,10 +204,7 @@ function ProfileScreen({ navigation, route }) {
             <TextInput
               style={styles.input}
               placeholder={email ?? "Enter your email"}
-              editable={isEnabled}
-              onChangeText={(newText) => {
-                setEmail(newText);
-              }}
+              editable={false}
             />
           </View>
           <View style={styles.inputWrapper}>
@@ -179,32 +230,49 @@ function ProfileScreen({ navigation, route }) {
             />
           </View>
           {isEnabled && (
-            <View>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  backgroundColor: COLORS.primary,
-                  borderRadius: 6,
-                  padding: 12,
-                  marginTop: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => {
-                  UpdateProfileData();
-                }}
-              >
+            <>
+              {errorText && (
                 <Text
                   style={{
-                    color: COLORS.white,
-                    fontWeight: "bold",
-                    fontSize: 16,
+                    color: COLORS.red,
+                    margin: 10,
+                    textAlign: "center",
                   }}
                 >
-                  Update
+                  {errorText}
                 </Text>
-              </TouchableOpacity>
-            </View>
+              )}
+              <View>
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    backgroundColor: COLORS.primary,
+                    borderRadius: 6,
+                    padding: 12,
+                    marginTop: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    UpdateProfileData();
+                  }}
+                >
+                  {updatingLoader ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <Text
+                      style={{
+                        color: COLORS.white,
+                        fontWeight: "bold",
+                        fontSize: 16,
+                      }}
+                    >
+                      Update
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </>
           )}
         </View>
       </ScrollView>
