@@ -30,7 +30,6 @@ function AccountScreen({navigation,route}) {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
-        fetchWishlist();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
