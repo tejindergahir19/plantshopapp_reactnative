@@ -8,7 +8,10 @@ import {
   Platform,
   FlatList,
   BackHandler,
-  RefreshControl
+  RefreshControl,
+  Alert,
+  Vibration,
+  ActivityIndicator,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -18,13 +21,20 @@ import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 import CartItemCard from "../../components/CartItemCard";
 
 import { db } from "../../firebase";
-import { collection, getDocs,query, where } from "firebase/firestore";
+import {
+  getDocs,
+  query,
+  where,
+  collection,
+  deleteDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
 function CartScreen({ navigation, route }) {
- 
   const refreshAll = route?.params?.refreshAll;
 
   const userId = useRef(null);
@@ -37,9 +47,13 @@ function CartScreen({ navigation, route }) {
   const subTotal = useRef(0);
   const delivery = useRef(30);
 
-  const [showSubtotal,setShowSubtotal] = useState(0);
-  const [showDelivery,setShowDelivery] = useState(delivery.current);
-  const [showTotal,setShowTotal] = useState(0);
+  const [showSubtotal, setShowSubtotal] = useState(0);
+  const [showDelivery, setShowDelivery] = useState(delivery.current);
+  const [showTotal, setShowTotal] = useState(0);
+
+  const [isUserDataExists, setIsUserDataExists] = useState(false);
+
+  const [showAddToCartLoader, setShowAddToCartLoader] = useState(false);
 
   const onRefresh = async () => {
     await fetchCartList();
@@ -54,6 +68,7 @@ function CartScreen({ navigation, route }) {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
+        checkUserDataExists();
         fetchCartList();
       } else {
         navigation.navigate("Login", { name: "Login" });
@@ -63,7 +78,7 @@ function CartScreen({ navigation, route }) {
 
   const fetchCartList = async () => {
     setCartList(null);
-    
+
     let tmpData = [];
 
     try {
@@ -80,21 +95,79 @@ function CartScreen({ navigation, route }) {
       console.error("Error fetching Cart list: ", error);
     }
     setCartList(tmpData);
+
+    console.log(tmpData);
   };
 
   const updateSubTotal = (amount) => {
     subTotal.current += amount;
     setShowSubtotal(subTotal.current);
     setShowTotal(subTotal.current + delivery.current);
-  }
+  };
+
+  const checkUserDataExists = async () => {
+    try {
+      const q = query(
+        collection(db, "tbl_user"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      setIsUserDataExists(querySnapshot.docs.length > 0);
+    } catch (error) {
+      console.error("Error checking user: ", error);
+    }
+  };
+
+  const placeOrder = async () => {
+    setShowAddToCartLoader(true);
+
+    if (isUserDataExists) {
+      let tmpData = [];
+      let tmpDocId = [];
+
+      const q = query(
+        collection(db, "tbl_cart"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        tmpDocId.push(doc.id);
+        tmpData.push(doc.data());
+      });
+
+      await addDoc(collection(db, "tbl_orders"), {
+        userId: userId.current,
+        items: tmpData,
+        subTotal: subTotal.current,
+        delivery: delivery.current,
+      });
+
+      tmpDocId.forEach(
+        async (item) => await deleteDoc(doc(db, "tbl_cart", item))
+      );
+
+      refreshAll();
+      Alert.alert("Order Placed !");
+      Vibration.vibrate();
+      navigation.navigate("Home", { refreshAll: refreshAll });
+    } else {
+      setShowAddToCartLoader(false);
+      Alert.alert("Please first complete your profile");
+      Vibration.vibrate();
+      navigation.navigate("Profile", { refreshAll: refreshAll });
+    }
+
+    setShowAddToCartLoader(false);
+  };
 
   useEffect(() => {
     isUserLogin();
 
-   
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      ()=>{
+      "hardwareBackPress",
+      () => {
         refreshAll();
       }
     );
@@ -131,12 +204,18 @@ function CartScreen({ navigation, route }) {
             showsVerticalScrollIndicator={false}
             data={cartList}
             renderItem={({ item }) => (
-              <CartItemCard updateSubTotal={updateSubTotal} refreshCartList={onRefresh} refreshAll={refreshAll} navigation={navigation} plantId={item.productId} quantity={item.quantity}  />
+              <CartItemCard
+                updateSubTotal={updateSubTotal}
+                refreshCartList={onRefresh}
+                refreshAll={refreshAll}
+                navigation={navigation}
+                plantId={item.productId}
+                quantity={item.quantity}
+              />
             )}
             refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             ListEmptyComponent={
               <View
                 style={{
@@ -169,16 +248,35 @@ function CartScreen({ navigation, route }) {
         </View>
         <View style={styles.delivery}>
           <Text style={styles.deliveryText}>Delivery</Text>
-          <Text style={styles.deliveryAmountText}>{(subTotal.current != 0 ? showDelivery : 0)} ₹</Text>
+          <Text style={styles.deliveryAmountText}>
+            {subTotal.current != 0 ? showDelivery : 0} ₹
+          </Text>
         </View>
         <View style={styles.total}>
           <Text style={styles.totalText}>Total</Text>
-          <Text style={styles.totalAmountText}>{(subTotal.current != 0 ? (showTotal) : 0)} ₹</Text>
+          <Text style={styles.totalAmountText}>
+            {subTotal.current != 0 ? showTotal : 0} ₹
+          </Text>
         </View>
 
-        <TouchableOpacity style={styles.checkOutButton}>
-          <Text style={styles.checkOutButtonText}>checkout</Text>
-        </TouchableOpacity>
+        {cartList != 0 ? (
+          <TouchableOpacity
+            onPress={() => {
+              placeOrder();
+            }}
+            style={styles.checkOutButton}
+          >
+            {showAddToCartLoader ? (
+              <ActivityIndicator size="small" color={COLORS.white} />
+            ) : (
+              <Text style={styles.checkOutButtonText}>checkout</Text>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.checkOutButtonDisable}>
+            <Text style={styles.checkOutButtonText}>checkout</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -259,6 +357,14 @@ const styles = StyleSheet.create({
   },
   checkOutButton: {
     backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 6,
+    marginTop: 24,
+  },
+  checkOutButtonDisable: {
+    backgroundColor: COLORS.caption,
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 12,

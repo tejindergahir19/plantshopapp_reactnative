@@ -257,7 +257,7 @@ function ProfileScreen({ navigation, route }) {
                   }}
                 >
                   {updatingLoader ? (
-                    <ActivityIndicator />
+                    <ActivityIndicator size="small" color={COLORS.white}  />
                   ) : (
                     <Text
                       style={{
