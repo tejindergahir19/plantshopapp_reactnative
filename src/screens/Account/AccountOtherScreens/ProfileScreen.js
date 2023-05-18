@@ -10,7 +10,6 @@ import {
   ScrollView,
   TextInput,
   Switch,
-  Button,
   Alert,
   Vibration,
   ActivityIndicator,
@@ -23,7 +22,8 @@ import {
   where,
   collection,
   updateDoc,
-  doc
+  doc,
+  addDoc
 } from "firebase/firestore";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -192,8 +192,8 @@ function ProfileScreen({ navigation, route }) {
             <Text style={styles.label}>Name</Text>
             <TextInput
               style={styles.input}
-              placeholder={name ?? "Enter your name"}
               editable={isEnabled}
+              value={name}
               onChangeText={(newText) => {
                 setName(newText);
               }}
@@ -203,7 +203,7 @@ function ProfileScreen({ navigation, route }) {
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={styles.input}
-              placeholder={email ?? "Enter your email"}
+              value={email}
               editable={false}
             />
           </View>
@@ -211,7 +211,7 @@ function ProfileScreen({ navigation, route }) {
             <Text style={styles.label}>Mobile</Text>
             <TextInput
               style={styles.input}
-              placeholder={phone ?? "Enter your mobile"}
+              value={phone}
               editable={isEnabled}
               onChangeText={(newText) => {
                 setPhone(newText);
@@ -222,8 +222,7 @@ function ProfileScreen({ navigation, route }) {
             <Text style={styles.label}>Address</Text>
             <TextInput
               style={styles.input}
-              placeholder={address ?? "Enter your address"}
-              editable={isEnabled}
+              value={address} editable={isEnabled}
               onChangeText={(newText) => {
                 setAddress(newText);
               }}
