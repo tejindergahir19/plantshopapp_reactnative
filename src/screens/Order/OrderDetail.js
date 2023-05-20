@@ -37,6 +37,7 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import OrderItemCard from "../../components/OrderItemCard";
 
+
 const auth = getAuth();
 
 function OrderDetail({ navigation, route }) {
@@ -46,10 +47,14 @@ function OrderDetail({ navigation, route }) {
 
   const userId = useRef(null);
 
+  const [userContactDetails, setUserContactDetails] = useState(null);
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
+
+        getUserContactDetails();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
@@ -72,6 +77,32 @@ function OrderDetail({ navigation, route }) {
         return COLORS.caption;
     }
   };
+
+  const getUserContactDetails = async() => {
+
+    setUserContactDetails(null);
+
+    try {
+        const q = query(
+          collection(db, "tbl_user"),
+          where("userId", "==", userId.current)
+        );
+        const querySnapshot = await getDocs(q);
+
+        const data = querySnapshot.docs[0].data();
+
+        setUserContactDetails(
+            {
+                name:data.userName,
+                phone:data.userPhone,
+                address:data.userAddress
+            }
+        )
+      } catch (error) {
+        console.error("Error checking user: ", error);
+      }
+  }
+
 
   useEffect(() => {
     isUserLogin();
@@ -104,17 +135,18 @@ function OrderDetail({ navigation, route }) {
           </TouchableOpacity>
         </View>
       </View>
-      {true ? (
+      <View
+        style={{
+          flex: 1,
+          paddingVertical: 20,
+          paddingHorizontal: Platform.OS == "ios" ? 20 : 0,
+        }}
+      >
         <ScrollView
-          style={{
-            flex: 1,
-            paddingVertical: 20,
-            paddingHorizontal: Platform.OS == "ios" ? 20 : 0,
-          }}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
         >
-          <View
-            style={styles.orderDetail}
-          >
+          <View style={styles.orderDetail}>
             <Text
               style={{
                 fontSize: 16,
@@ -134,8 +166,10 @@ function OrderDetail({ navigation, route }) {
           <View
             style={[
               {
-              marginTop: 6,
-            }, styles.orderDetail]}
+                marginTop: 6,
+              },
+              styles.orderDetail,
+            ]}
           >
             <Text
               style={{
@@ -143,7 +177,7 @@ function OrderDetail({ navigation, route }) {
                 fontWeight: "bold",
               }}
             >
-              Order Date 
+              Order Date
             </Text>
             <Text
               style={{
@@ -215,10 +249,7 @@ function OrderDetail({ navigation, route }) {
               marginTop: 5,
             }}
           ></View>
-          <View
-             style={[
-               styles.orderDetail]}
-          >
+          <View style={[styles.orderDetail]}>
             <Text
               style={{
                 fontSize: 16,
@@ -244,8 +275,10 @@ function OrderDetail({ navigation, route }) {
           <View
             style={[
               {
-              marginTop: 15,
-            }, styles.orderDetail]}
+                marginTop: 15,
+              },
+              styles.orderDetail,
+            ]}
           >
             <Text
               style={{
@@ -253,7 +286,7 @@ function OrderDetail({ navigation, route }) {
                 fontWeight: "bold",
               }}
             >
-              Payment Type  
+              Payment Type
             </Text>
             <Text
               style={{
@@ -263,12 +296,100 @@ function OrderDetail({ navigation, route }) {
               Cash / Pay on Delivery
             </Text>
           </View>
+
+          {orderDetail?.deliveryBy && (
+            <View
+              style={[
+                {
+                  marginTop: 15,
+                },
+                styles.orderDetail,
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                }}
+              >
+                Deliver By
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.primary,
+                }}
+              >
+                {orderDetail?.deliveryBy}
+              </Text>
+            </View>
+          )}
+
+          {orderDetail?.msg && (
+            <View
+              style={[
+                {
+                  marginTop: 15,
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                }}
+              >
+                Note
+              </Text>
+              <Text
+                style={{
+                  color: COLORS.caption,
+                  marginTop: 5,
+                }}
+              >
+                {orderDetail?.msg}
+              </Text>
+            </View>
+          )}
+
+          <View
+            style={{
+              marginTop: 15,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+              }}
+            >
+              Contact Details
+            </Text>
+
+            {userContactDetails ? (
+                <Text
+              style={{
+                color: COLORS.caption,
+                marginTop: 3,
+              }}
+            >
+              {userContactDetails?.name} {"\n"}
+              {userContactDetails?.address} {"\n"}
+
+              <Text style={{
+                fontWeight:"bold"
+              }}>Phone</Text> : {userContactDetails?.phone} {"\n"}
+            </Text>
+            ) : (
+              <View style={{
+                marginTop:20
+              }}>
+              <ActivityIndicator color={COLORS.primary} size="small" />
+              </View>
+            )}
+            
+          </View>
         </ScrollView>
-      ) : (
-        <View style={{ paddingHorizontal: Platform.OS == "ios" ? 20 : 0 }}>
-          <DetailScreenLoader />
-        </View>
-      )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -379,11 +500,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textTransform: "capitalize",
   },
-  orderDetail:{
+  orderDetail: {
     flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-  }
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 });
 
 export default OrderDetail;
