@@ -75,11 +75,13 @@ function OrderScreen({navigation,route}) {
       console.error("Error fetching wishlist: ", error);
     }
     setOrderList(tmpData.sort((a, b) => {
-      const dateA = new Date(a.orderDetail.date + ' ' + a.orderDetail.time);
-      const dateB = new Date(b.orderDetail.date + ' ' + b.orderDetail.time);
+      const dateA = new Date(a.orderDetail.date);
+      const dateB = new Date(b.orderDetail.date);
       return dateB - dateA;
-    }));
+    }).reverse());
   };
+
+  
 
   useEffect(() => {
     isUserLogin();

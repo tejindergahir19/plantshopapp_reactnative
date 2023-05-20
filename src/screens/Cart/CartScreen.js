@@ -45,7 +45,7 @@ function CartScreen({ navigation, route }) {
 
   //bill details
   const subTotal = useRef(0);
-  const delivery = useRef(30);
+  const delivery = useRef(50);
 
   const [showSubtotal, setShowSubtotal] = useState(0);
   const [showDelivery, setShowDelivery] = useState(delivery.current);
@@ -171,7 +171,8 @@ const time12 = `${hours12}:${minutes}:${seconds} ${amPm}`;
         date:currentDate,
         time:time12,
         status:"Pending",
-        msg:null
+        msg:null,
+        deliveryBy:null
       });
 
       tmpDocId.forEach(
@@ -293,7 +294,7 @@ const time12 = `${hours12}:${minutes}:${seconds} ${amPm}`;
           color: COLORS.primary,
           marginTop: 8,
           fontSize: 12
-        }}>Payment: Cash on Delivery / PayOnline on Delivery</Text>
+        }}>Payment: Cash / Pay on Delivery</Text>
 
         {cartList != 0 ? (
           <TouchableOpacity
