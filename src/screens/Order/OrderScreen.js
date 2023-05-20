@@ -1,4 +1,4 @@
-import React, { useState,useRef,useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Text,
   View,
@@ -6,10 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-
   BackHandler,
   FlatList,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -26,15 +25,14 @@ import OrderCard from "../../components/OrderCard";
 
 const auth = getAuth();
 
-function OrderScreen({navigation,route}) {
-
+function OrderScreen({ navigation, route }) {
   const refreshAll = route?.params?.refreshAll;
 
   const userId = useRef(null);
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const [orderList,setOrderList] = useState(null);
+  const [orderList, setOrderList] = useState(null);
 
   const onRefresh = async () => {
     await fetchOrderList();
@@ -65,30 +63,37 @@ function OrderScreen({navigation,route}) {
       const querySnapshot = await getDocs(q);
 
       querySnapshot.forEach((doc) => {
-        console.log(doc.createTime)
+        console.log(doc.createTime);
         tmpData.push({
-          orderId:doc.id,
-          orderDetail:doc.data()
+          orderId: doc.id,
+          orderDetail: doc.data(),
         });
       });
     } catch (error) {
       console.error("Error fetching wishlist: ", error);
     }
-    setOrderList(tmpData.sort((a, b) => {
-      const dateA = new Date(a.orderDetail.date);
-      const dateB = new Date(b.orderDetail.date);
-      return dateB - dateA;
-    }).reverse());
-  };
+    setOrderList(
+      tmpData.sort((a, b) => {
+        const [a_day, a_month, a_year] = a.orderDetail.date.split("-");
+        const [a_hour, a_min, a_sec] = a.orderDetail.time.split(":");
 
-  
+        const [b_day, b_month, b_year] = b.orderDetail.date.split("-");
+        const [b_hour, b_min, b_sec] = b.orderDetail.time.split(":");
+
+        const time1 = new Date(`${a_year}-${a_month}-${a_day}T${a_hour}:${a_min}:${a_sec.split(" ")[0]}`);
+        const time2 = new Date(`${b_year}-${b_month}-${b_day}T${b_hour}:${b_min}:${b_sec.split(" ")[0]}`);
+
+        return time2 - time1;
+      })
+    );
+  };
 
   useEffect(() => {
     isUserLogin();
 
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      ()=>{
+      "hardwareBackPress",
+      () => {
         refreshAll();
       }
     );
@@ -110,41 +115,46 @@ function OrderScreen({navigation,route}) {
         <Text style={styles.headerTitle}>Orders</Text>
         <View>
           <TouchableOpacity>
-            <Icon
-              name="log-out-outline"
-              color={COLORS.white}
-              size={24}
-            />
+            <Icon name="log-out-outline" color={COLORS.white} size={24} />
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-      {orderList ? (
+        {orderList ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={orderList}
             renderItem={({ item }) => (
-              <OrderCard refreshAll={refreshAll} navigation={navigation} orderId={item.orderId} orderDetail={item.orderDetail} />
+              <OrderCard
+                refreshAll={refreshAll}
+                navigation={navigation}
+                orderId={item.orderId}
+                orderDetail={item.orderDetail}
+              />
             )}
-
             refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-
-              ListEmptyComponent={
-                <View style={{
-                  flex:1,
-                  height:320,
-                  justifyContent:"flex-end",
-                  alignItems:"center",
-                }}>
-                  <Text style={{
-                    fontSize:16,
-                    color:COLORS.caption
-                  }}>No Records Found</Text>
-                </View>
-              }
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            ListEmptyComponent={
+              <View
+                style={{
+                  flex: 1,
+                  height: 320,
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: COLORS.caption,
+                  }}
+                >
+                  No Records Found
+                </Text>
+              </View>
+            }
           />
         ) : (
           <WhishlistScreenLoader />
@@ -152,7 +162,11 @@ function OrderScreen({navigation,route}) {
       </View>
 
       <View style={styles.iosPadding}>
-        <BottomNavigation navigation={navigation} refreshAll={refreshAll}  screen="order" />
+        <BottomNavigation
+          navigation={navigation}
+          refreshAll={refreshAll}
+          screen="order"
+        />
       </View>
     </SafeAreaView>
   );
@@ -176,7 +190,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-
 });
 
 export default OrderScreen;

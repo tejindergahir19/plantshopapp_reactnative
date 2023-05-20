@@ -29,7 +29,7 @@ function AlarmScreen({navigation,route}) {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
-        fetchWishlist();
+        // fetchWishlist();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
