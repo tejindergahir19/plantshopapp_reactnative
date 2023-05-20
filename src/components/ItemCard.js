@@ -32,7 +32,7 @@ function isDataPresent(arr, data) {
 }
 
 function ItemCard(props) {
-  const {value, navigation, userId, wishlist, cartList,refreshAll} = props;
+  const {value, navigation, userId, wishlist, cartList,refreshAll,updateCartListLength} = props;
 
   const plantId = value.id;
 
@@ -108,6 +108,7 @@ function ItemCard(props) {
       setInCartList(true);
       Alert.alert("Product Added to Cart");
       Vibration.vibrate();
+      updateCartListLength();
     } catch (error) {
       console.error("Error handling cart: ", error);
     }

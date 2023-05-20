@@ -120,6 +120,21 @@ function CartScreen({ navigation, route }) {
   };
 
   const placeOrder = async () => {
+    const date = new Date();
+
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+
+    // This arrangement can be altered based on how we want the date's format to appear.
+    let currentDate = `${day}-${month}-${year}`;
+
+    let hr = date.getHours();
+    let min = date.getMinutes();
+    let sec = date.getSeconds();
+
+    let currentTime = `${hr}:${min}:${sec}`;
+  
     setShowAddToCartLoader(true);
 
     if (isUserDataExists) {
@@ -142,6 +157,9 @@ function CartScreen({ navigation, route }) {
         items: tmpData,
         subTotal: subTotal.current,
         delivery: delivery.current,
+        date:currentDate,
+        time:currentTime,
+        status:"Pending"
       });
 
       tmpDocId.forEach(
@@ -252,7 +270,7 @@ function CartScreen({ navigation, route }) {
             {subTotal.current != 0 ? showDelivery : 0} ₹
           </Text>
         </View>
-        
+
         <View style={styles.total}>
           <Text style={styles.totalText}>Total</Text>
           <Text style={styles.totalAmountText}>
@@ -260,9 +278,9 @@ function CartScreen({ navigation, route }) {
           </Text>
         </View>
         <Text style={{
-          color:COLORS.primary,
-          marginTop:8,
-          fontSize:12
+          color: COLORS.primary,
+          marginTop: 8,
+          fontSize: 12
         }}>Payment: Cash on Delivery / PayOnline on Delivery</Text>
 
         {cartList != 0 ? (
@@ -275,12 +293,12 @@ function CartScreen({ navigation, route }) {
             {showAddToCartLoader ? (
               <ActivityIndicator size="small" color={COLORS.white} />
             ) : (
-              <Text style={styles.checkOutButtonText}>checkout</Text>
+              <Text style={styles.checkOutButtonText}>place order</Text>
             )}
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={styles.checkOutButtonDisable}>
-            <Text style={styles.checkOutButtonText}>checkout</Text>
+            <Text style={styles.checkOutButtonText}>place order</Text>
           </TouchableOpacity>
         )}
       </View>

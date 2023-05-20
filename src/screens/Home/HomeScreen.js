@@ -52,6 +52,8 @@ function HomeScreen({ navigation }) {
   const [wishlist, setWishlist] = useState(null);
   const [cartList, setCartList] = useState(null);
 
+  const [cartListLength,setCartListLength] = useState(0);
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -133,7 +135,11 @@ function HomeScreen({ navigation }) {
       console.error("Error fetching wishlist: ", error);
     }
     setCartList(tmpData);
+
+    setCartListLength(tmpData.length);
   };
+
+  const updateCartListLength = () => setCartListLength(cartListLength + 1);
 
   const fetchCategoryData = async () => {
     let tmpData = [];
@@ -219,7 +225,7 @@ function HomeScreen({ navigation }) {
                   fontWeight: "bold",
                 }}
               >
-                {cartList?.length ?? (
+                {cartListLength ?? (
                   <View style={{ paddingVertical: 5 }}>
                     <ActivityIndicator size={"small"} color={COLORS.white} />
                   </View>
@@ -318,6 +324,7 @@ function HomeScreen({ navigation }) {
                   userId={userId.current}
                   cartList={cartList}
                   refreshAll={onRefresh}
+                  updateCartListLength={updateCartListLength}
                 />
               )}
               keyExtractor={(item) => item.id}

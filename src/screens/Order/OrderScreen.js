@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   Platform,
 
-  BackHandler
+  BackHandler,
+  FlatList,
+  RefreshControl
 } from "react-native";
 
 import Icon from "react-native-vector-icons/Ionicons";
@@ -15,7 +17,12 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import {getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from "../../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
+import WishlistCard from "../../components/WishlistCard";
+import OrderCard from "../../components/OrderCard";
 
 const auth = getAuth();
 
@@ -25,14 +32,53 @@ function OrderScreen({navigation,route}) {
 
   const userId = useRef(null);
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [orderList,setOrderList] = useState(null);
+
+  const onRefresh = async () => {
+    await fetchOrderList();
+    setRefreshing(false);
+  };
+
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
+        fetchOrderList();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
     });
+  };
+
+  const fetchOrderList = async () => {
+    setOrderList(null);
+
+    let tmpData = [];
+
+    try {
+      const q = query(
+        collection(db, "tbl_orders"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        console.log(doc.createTime)
+        tmpData.push({
+          orderId:doc.id,
+          orderDetail:doc.data()
+        });
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
+    setOrderList(tmpData.sort((a, b) => {
+      const dateA = new Date(a.orderDetail.date + ' ' + a.orderDetail.time);
+      const dateB = new Date(b.orderDetail.date + ' ' + b.orderDetail.time);
+      return dateB - dateA;
+    }));
   };
 
   useEffect(() => {
@@ -72,74 +118,35 @@ function OrderScreen({navigation,route}) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="person"
-              color={COLORS.black}
-              size={24}
-            />
+      {orderList ? (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={orderList}
+            renderItem={({ item }) => (
+              <OrderCard refreshAll={refreshAll} refreshOrderList={fetchOrderList} navigation={navigation} orderId={item.orderId} orderDetail={item.orderDetail} />
+            )}
 
-            <Text style={styles.accountInnerTabsText}>Profile</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-            navigation.navigate("Wishlist",{refreshAll:refreshAll});
-        }} style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="heart"
-              color={COLORS.black}
-              size={24}
-            />
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
 
-            <Text style={styles.accountInnerTabsText}>Wishlist</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="logo-dropbox"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Orders</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        
-        
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="chatbubble-ellipses"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Chat with us !</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
+              ListEmptyComponent={
+                <View style={{
+                  flex:1,
+                  height:320,
+                  justifyContent:"flex-end",
+                  alignItems:"center",
+                }}>
+                  <Text style={{
+                    fontSize:16,
+                    color:COLORS.caption
+                  }}>No Records Found</Text>
+                </View>
+              }
+          />
+        ) : (
+          <WhishlistScreenLoader />
+        )}
       </View>
 
       <View style={styles.iosPadding}>
@@ -167,25 +174,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  accountTabs:{
-    backgroundColor:COLORS.grey,
-    borderRadius:6,
-    justifyContent:"space-between",
-    flexDirection:"row",
-    alignItems:"center",
-    padding:15,
-    marginBottom:6
-  },
-  accountInnerTabs:{
-    justifyContent:"space-between",
-    flexDirection:"row",
-    alignItems:"center"
-  },
-  accountInnerTabsText:{
-    marginLeft:10,
-    fontWeight:"bold",
-    fontSize:16
-  }
+
 });
 
 export default OrderScreen;
