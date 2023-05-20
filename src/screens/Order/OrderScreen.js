@@ -123,7 +123,7 @@ function OrderScreen({navigation,route}) {
             showsVerticalScrollIndicator={false}
             data={orderList}
             renderItem={({ item }) => (
-              <OrderCard refreshAll={refreshAll} refreshOrderList={fetchOrderList} navigation={navigation} orderId={item.orderId} orderDetail={item.orderDetail} />
+              <OrderCard refreshAll={refreshAll} navigation={navigation} orderId={item.orderId} orderDetail={item.orderDetail} />
             )}
 
             refreshControl={

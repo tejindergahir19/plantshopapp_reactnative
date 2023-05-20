@@ -133,7 +133,18 @@ function CartScreen({ navigation, route }) {
     let min = date.getMinutes();
     let sec = date.getSeconds();
 
-    let currentTime = `${hr}:${min}:${sec}`;
+    const time24 = `${hr}:${min}:${sec}`;
+const timeParts = time24.split(":");
+const hours24 = parseInt(timeParts[0]);
+const minutes = timeParts[1];
+const seconds = timeParts[2];
+
+let hours12 = hours24 % 12;
+hours12 = hours12 === 0 ? 12 : hours12; // Adjusting 0 to 12 for 12-hour format
+const amPm = hours24 < 12 ? "AM" : "PM";
+
+const time12 = `${hours12}:${minutes}:${seconds} ${amPm}`;
+
   
     setShowAddToCartLoader(true);
 
@@ -158,8 +169,9 @@ function CartScreen({ navigation, route }) {
         subTotal: subTotal.current,
         delivery: delivery.current,
         date:currentDate,
-        time:currentTime,
-        status:"Pending"
+        time:time12,
+        status:"Pending",
+        msg:null
       });
 
       tmpDocId.forEach(
