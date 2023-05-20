@@ -71,6 +71,9 @@ function DetailScreen({ navigation, route }) {
     try {
       querySnapshot = await getDoc(doc(db, "tbl_plant_data", plantId));
     } catch (error) {
+      navigation.navigate("Home",{refreshAll:refreshAll});
+      Alert.alert("Something went wrong ! Please try again !");
+      Vibration.vibrate();
       console.error("Error fetching data: ", error);
       return;
     }
