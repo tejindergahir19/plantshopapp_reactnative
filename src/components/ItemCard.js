@@ -163,8 +163,8 @@ function ItemCard(props) {
       </View>
 
       <Text style={styles.title}>
-        {value?.data?.title?.length > 24
-          ? value?.data?.title.slice(0, 24) + "..."
+        {value?.data?.title?.length > 12
+          ? value?.data?.title.slice(0, 12) + "..."
           : value?.data?.title}
       </Text>
       <View style={styles.footerItem}>
