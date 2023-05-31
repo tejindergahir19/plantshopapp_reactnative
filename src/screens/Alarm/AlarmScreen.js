@@ -15,7 +15,9 @@ import Icon from "react-native-vector-icons/Ionicons";
 import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
 
-import {getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from "../../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
 
@@ -29,12 +31,43 @@ function AlarmScreen({navigation,route}) {
     await onAuthStateChanged(auth, (user) => {
       if (user) {
         userId.current = user.uid;
-        // fetchWishlist();
+        fetchProductsFromOrders();
       } else {
         navigation.navigate("Login", { name: "Login" });
       }
     });
   };
+
+  const fetchProductsFromOrders = async () => {
+
+    let tmpData = [];
+    let tmpPlants = [];
+    
+    try {
+      const q = query(
+        collection(db, "tbl_orders"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        console.log(doc.createTime);
+        tmpData.push(doc?.data()?.items?.map((item,key)=>(item.productId)));
+      });
+
+      tmpData.flat().map((item,key)=>(
+        tmpPlants.push(item)
+      ))
+      
+
+
+
+      console.log(tmpPlants)
+    } catch (error) {
+      console.error("Error fetching wishlist: ", error);
+    }
+
+  }
 
   useEffect(() => {
     isUserLogin();
@@ -73,74 +106,7 @@ function AlarmScreen({navigation,route}) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="person"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Profile</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-            navigation.navigate("Wishlist",{refreshAll:refreshAll});
-        }} style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="heart"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Wishlist</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="logo-dropbox"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Orders</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
         
-        
-        <TouchableOpacity style={styles.accountTabs}>
-          <View style={styles.accountInnerTabs}>
-          <Icon
-              name="chatbubble-ellipses"
-              color={COLORS.black}
-              size={24}
-            />
-
-            <Text style={styles.accountInnerTabsText}>Chat with us !</Text>
-          </View>
-          <Icon
-              name="caret-forward"
-              color={COLORS.black}
-              size={24}
-            />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.iosPadding}>
