@@ -80,7 +80,7 @@ function CartItemCard(props) {
       updateSubTotal(price.current);
       updateQuantity("add");
     } else {
-      Alert.alert("No More Plants Available !");
+      Alert.alert("No More Items Available !");
     }
     Vibration.vibrate();
   };
