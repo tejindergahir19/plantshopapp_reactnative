@@ -13,7 +13,6 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
-import BottomNavigation from "../../components/BottomNavigation";
 
 import {getAuth, onAuthStateChanged } from "firebase/auth";
 
