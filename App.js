@@ -19,6 +19,7 @@ import WishlistScreen from "./src/screens/Wishlist/WishlistScreen";
 import OrderScreen from "./src/screens/Order/OrderScreen";
 import ProfileScreen from "./src/screens/Account/AccountOtherScreens/ProfileScreen";
 import OrderDetail from "./src/screens/Order/OrderDetail";
+import ChatScreen from "./src/screens/Account/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -115,6 +116,11 @@ export default function App() {
           name="Cart"
           component={CartScreen}
           options={{ title: "Cart", headerShown: false }}
+        />
+        <Stack.Screen
+          name="Chat"
+          component={ChatScreen}
+          options={{ title: "Chat", headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

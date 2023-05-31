@@ -144,7 +144,9 @@ function AccountScreen({navigation,route}) {
         </TouchableOpacity>
         
         
-        <TouchableOpacity style={styles.accountTabs}>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate("Chat",{refreshAll:refreshAll});
+        }} style={styles.accountTabs}>
           <View style={styles.accountInnerTabs}>
           <Icon
               name="chatbubble-ellipses"
