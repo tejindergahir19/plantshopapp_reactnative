@@ -114,6 +114,7 @@ function ProfileScreen({ navigation, route }) {
             userName: name,
             userPhone: phone,
             userAddress: address,
+            userEmail:email
           })
         )
         
@@ -129,6 +130,7 @@ function ProfileScreen({ navigation, route }) {
           userName: name,
           userPhone: phone,
           userAddress: address,
+          userEmail:email
         }));
     }
 
