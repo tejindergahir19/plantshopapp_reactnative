@@ -1,4 +1,4 @@
-import React, { useState,useRef,useEffect} from "react";
+import React, {useRef,useEffect} from "react";
 import {
   Text,
   View,
@@ -6,8 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  FlatList,
-  RefreshControl,
   BackHandler
 } from "react-native";
 
@@ -135,6 +133,24 @@ function AccountScreen({navigation,route}) {
             />
 
             <Text style={styles.accountInnerTabsText}>Orders</Text>
+          </View>
+          <Icon
+              name="caret-forward"
+              color={COLORS.black}
+              size={24}
+            />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate("Alarm",{refreshAll:refreshAll});
+        }} style={styles.accountTabs}>
+          <View style={styles.accountInnerTabs}>
+          <Icon
+              name="alarm"
+              color={COLORS.black}
+              size={24}
+            />
+
+            <Text style={styles.accountInnerTabsText}>Water Alert</Text>
           </View>
           <Icon
               name="caret-forward"

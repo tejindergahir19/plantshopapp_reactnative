@@ -95,8 +95,6 @@ function CartScreen({ navigation, route }) {
       console.error("Error fetching Cart list: ", error);
     }
     setCartList(tmpData);
-
-    console.log(tmpData);
   };
 
   const updateSubTotal = (amount) => {

@@ -20,7 +20,6 @@ import { db } from "../../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
-import WishlistCard from "../../components/WishlistCard";
 import OrderCard from "../../components/OrderCard";
 
 const auth = getAuth();
@@ -63,7 +62,6 @@ function OrderScreen({ navigation, route }) {
       const querySnapshot = await getDocs(q);
 
       querySnapshot.forEach((doc) => {
-        console.log(doc.createTime);
         tmpData.push({
           orderId: doc.id,
           orderDetail: doc.data(),

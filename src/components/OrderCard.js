@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {
   TouchableOpacity,
   Text,
   View,
   StyleSheet,
-  Image,
-  Platform,
-  ActivityIndicator,
 } from "react-native";
 import COLORS from "../constant/COLORS";
-import Icon from "react-native-vector-icons/Ionicons";
 
 function OrderCard(props) {
   const { refreshAll, navigation, orderId, orderDetail } = props;

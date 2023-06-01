@@ -14,7 +14,6 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
-import BottomNavigation from "../../components/BottomNavigation";
 import WishlistCard from "../../components/WishlistCard";
 import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 

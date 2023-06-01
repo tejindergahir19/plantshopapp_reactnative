@@ -62,7 +62,6 @@ function AlarmScreen({navigation,route}) {
       const querySnapshot = await getDocs(q);
 
       querySnapshot.forEach((doc) => {
-        console.log(doc.createTime);
         tmpData.push(doc?.data()?.items?.map((item,key)=>(item.productId)));
       });
 

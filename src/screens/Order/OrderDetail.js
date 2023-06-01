@@ -6,10 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  Image,
   ActivityIndicator,
-  Alert,
-  Vibration,
   BackHandler,
   ScrollView,
 } from "react-native";
@@ -18,20 +15,12 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 import COLORS from "../../constant/COLORS";
 
-import DetailScreenLoader from "../../loaders/DetailScreenLoader";
-import Rating from "../../components/Rating";
-
 import { db } from "../../firebase";
 import {
-  doc,
-  getDoc,
   getDocs,
   query,
   where,
-  addDoc,
   collection,
-  deleteDoc,
-  updateDoc,
 } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -78,29 +67,29 @@ function OrderDetail({ navigation, route }) {
     }
   };
 
-  const getUserContactDetails = async() => {
+  const getUserContactDetails = async () => {
 
     setUserContactDetails(null);
 
     try {
-        const q = query(
-          collection(db, "tbl_user"),
-          where("userId", "==", userId.current)
-        );
-        const querySnapshot = await getDocs(q);
+      const q = query(
+        collection(db, "tbl_user"),
+        where("userId", "==", userId.current)
+      );
+      const querySnapshot = await getDocs(q);
 
-        const data = querySnapshot.docs[0].data();
+      const data = querySnapshot.docs[0].data();
 
-        setUserContactDetails(
-            {
-                name:data.userName,
-                phone:data.userPhone,
-                address:data.userAddress
-            }
-        )
-      } catch (error) {
-        console.error("Error checking user: ", error);
-      }
+      setUserContactDetails(
+        {
+          name: data.userName,
+          phone: data.userPhone,
+          address: data.userAddress
+        }
+      )
+    } catch (error) {
+      console.error("Error checking user: ", error);
+    }
   }
 
 
@@ -366,27 +355,27 @@ function OrderDetail({ navigation, route }) {
             </Text>
 
             {userContactDetails ? (
-                <Text
-              style={{
-                color: COLORS.caption,
-                marginTop: 3,
-              }}
-            >
-              {userContactDetails?.name} {"\n"}
-              {userContactDetails?.address} {"\n"}
+              <Text
+                style={{
+                  color: COLORS.caption,
+                  marginTop: 3,
+                }}
+              >
+                {userContactDetails?.name} {"\n"}
+                {userContactDetails?.address} {"\n"}
 
-              <Text style={{
-                fontWeight:"bold"
-              }}>Phone</Text> : {userContactDetails?.phone} {"\n"}
-            </Text>
+                <Text style={{
+                  fontWeight: "bold"
+                }}>Phone</Text> : {userContactDetails?.phone} {"\n"}
+              </Text>
             ) : (
               <View style={{
-                marginTop:20
+                marginTop: 20
               }}>
-              <ActivityIndicator color={COLORS.primary} size="small" />
+                <ActivityIndicator color={COLORS.primary} size="small" />
               </View>
             )}
-            
+
           </View>
         </ScrollView>
       </View>

@@ -7,7 +7,6 @@ import {
   Image,
   Platform,
   ActivityIndicator,
-  FlatList,
   Alert,
   Vibration,
 } from "react-native";
@@ -83,7 +82,6 @@ function ItemCard(props) {
   };
 
   const updateQuantity = async () => {
-    console.log(value.unit);
     const docRef = doc(db, "tbl_plant_data", plantId);
     try {
       await updateDoc(docRef, {
@@ -92,8 +90,6 @@ function ItemCard(props) {
     } catch (error) {
       console.log("Not able to update", error);
     }
-
-    console.log("done");
   };
 
   const handleAddToCart = async () => {

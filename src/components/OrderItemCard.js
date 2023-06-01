@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Image,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import COLORS from "../constant/COLORS";
 
