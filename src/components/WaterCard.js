@@ -6,13 +6,8 @@ import {
   StyleSheet,
   Image,
   Platform,
-  Alert,
-  Vibration,
-  Pressable,
 } from "react-native";
 import COLORS from "../constant/COLORS";
-
-import Icon from "react-native-vector-icons/Ionicons";
 
 import { db } from "../firebase";
 import {
@@ -62,7 +57,9 @@ function WaterCard(props) {
   }, []);
 
   return (
-    <TouchableOpacity
+    (value?.plantType != "gardening tools" && value?.plantType != "pots" && value?.plantType != "seeds" && value?.plantType != "other") ? 
+    (
+        <TouchableOpacity
       onPress={() => {
         navigation.navigate("Detail", {
           plantId: plantId,
@@ -94,10 +91,19 @@ function WaterCard(props) {
           </View>
         </View>
         <View style={styles.addToWishlist}>
-          
+          <Text>Water Every</Text>
+          <Text style={{
+            color:COLORS.primary,
+            fontSize:20,
+            fontWeight:"bold"
+          }}>{
+                Number(value?.waterEvery) > 24 ? 
+            ((value?.waterEvery / 24) + " Days") : (value?.waterEvery+" Hr")
+            }</Text>
         </View>
       </View>
     </TouchableOpacity>
+    ) : null
   );
 }
 
@@ -120,8 +126,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   addToWishlist: {
-    justifyContent: "space-between",
-    alignItems: "flex-end",
+    justifyContent: "center",
+    alignItems: "center",
   },
   infoSection: {
     flexDirection: "row",
