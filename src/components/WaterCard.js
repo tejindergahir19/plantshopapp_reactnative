@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import COLORS from "../constant/COLORS";
 
@@ -97,8 +98,14 @@ function WaterCard(props) {
             fontSize:20,
             fontWeight:"bold"
           }}>{
+              value?.waterEvery ? 
+               (
                 Number(value?.waterEvery) > 24 ? 
             ((value?.waterEvery / 24) + " Days") : (value?.waterEvery+" Hr")
+               ) : 
+               (
+                <ActivityIndicator color={COLORS.primary} size={"small"} />
+               )
             }</Text>
         </View>
       </View>
