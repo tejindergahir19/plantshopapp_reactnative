@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-
+  FlatList,
+  RefreshControl,
   BackHandler
 } from "react-native";
 
@@ -16,8 +17,10 @@ import COLORS from "../../constant/COLORS";
 import BottomNavigation from "../../components/BottomNavigation";
 
 import { db } from "../../firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection,doc, getDocs, getDoc,query, where } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import WaterCard from "../../components/WaterCard";
+import WhishlistScreenLoader from "../../loaders/WhishlistScreenLoader";
 
 const auth = getAuth();
 
@@ -26,6 +29,9 @@ function AlarmScreen({navigation,route}) {
   const refreshAll = route?.params?.refreshAll;
 
   const userId = useRef(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [waterPlant,setWaterPlant] = useState(null);
 
   const isUserLogin = async () => {
     await onAuthStateChanged(auth, (user) => {
@@ -38,10 +44,15 @@ function AlarmScreen({navigation,route}) {
     });
   };
 
-  const fetchProductsFromOrders = async () => {
+  const onRefresh = async () => {
+    await fetchProductsFromOrders();
+    setRefreshing(false);
+  };
 
+  const fetchProductsFromOrders = async () => {
+    setWaterPlant(null);
     let tmpData = [];
-    let tmpPlants = [];
+    let tmpPlants = new Set();
     
     try {
       const q = query(
@@ -55,14 +66,11 @@ function AlarmScreen({navigation,route}) {
         tmpData.push(doc?.data()?.items?.map((item,key)=>(item.productId)));
       });
 
-      tmpData.flat().map((item,key)=>(
-        tmpPlants.push(item)
+      tmpData.flat().map((item)=>(
+        tmpPlants.add(item)
       ))
-      
 
-
-
-      console.log(tmpPlants)
+      setWaterPlant(Array.from(tmpPlants));
     } catch (error) {
       console.error("Error fetching wishlist: ", error);
     }
@@ -106,7 +114,37 @@ function AlarmScreen({navigation,route}) {
       </View>
 
       <View style={[{ flex: 1, paddingVertical: 20 }, styles.iosPadding]}>
+        {
+          waterPlant ? 
+          (
+            <FlatList
+            showsVerticalScrollIndicator={false}
+            data={waterPlant}
+            renderItem={({ item,key}) => (
+              <WaterCard key={key} refreshAll={refreshAll} navigation={navigation} plantId={item}/>
         
+            )}
+
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+
+              ListEmptyComponent={
+                <View style={{
+                  flex:1,
+                  height:320,
+                  justifyContent:"flex-end",
+                  alignItems:"center",
+                }}>
+                  <Text style={{
+                    fontSize:16,
+                    color:COLORS.caption
+                  }}>No Records Found</Text>
+                </View>
+              }
+          />
+          ) : <WhishlistScreenLoader />
+        }
       </View>
 
       <View style={styles.iosPadding}>
