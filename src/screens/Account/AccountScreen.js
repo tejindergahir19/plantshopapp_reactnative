@@ -170,7 +170,7 @@ function AccountScreen({navigation,route}) {
               size={24}
             />
 
-            <Text style={styles.accountInnerTabsText}>Chat with us !</Text>
+            <Text style={styles.accountInnerTabsText}>Contact us !</Text>
           </View>
           <Icon
               name="caret-forward"
