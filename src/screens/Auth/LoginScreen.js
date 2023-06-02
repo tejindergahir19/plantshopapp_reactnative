@@ -119,11 +119,11 @@ function LoginScreen({ navigation }) {
 
         
 
-        {!keyboardStatus && (
+        {/* {!keyboardStatus && (
           <TouchableOpacity style={styles.forgotButton}>
             <Text style={styles.forgotButtonText}>Forgot Password</Text>
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
 
       {!keyboardStatus && (
