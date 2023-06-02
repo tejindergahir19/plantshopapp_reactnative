@@ -58,59 +58,59 @@ function WaterCard(props) {
   }, []);
 
   return (
-    (value?.plantType != "gardening tools" && value?.plantType != "pots" && value?.plantType != "seeds" && value?.plantType != "other") ? 
-    (
+    (value?.plantType != "gardening tools" && value?.plantType != "pots" && value?.plantType != "seeds" && value?.plantType != "other") ?
+      (
         <TouchableOpacity
-      onPress={() => {
-        navigation.navigate("Detail", {
-          plantId: plantId,
-          refreshAll: refreshAll,
-        });
-      }}
-      style={styles.itemCard}
-    >
-      <View style={styles.infoSection}>
-        <View style={styles.itemImg}>
-          <Image
-            source={{
-            uri: value?.img,
+          onPress={() => {
+            navigation.navigate("Detail", {
+              plantId: plantId,
+              refreshAll: refreshAll,
+            });
           }}
-            style={{ width: 65, height: 70 }}
-          />
-        </View>
-        <View style={{ flex: 1, justifyContent: "center" }}>
-          <Text style={styles.title}>
-            {value?.title.length > 24
-              ? value?.title.slice(0, 30) + "..."
-              : value?.title}
-          </Text>
+          style={styles.itemCard}
+        >
+          <View style={styles.infoSection}>
+            <View style={styles.itemImg}>
+              <Image
+                source={{
+                  uri: value?.img,
+                }}
+                style={{ width: 65, height: 70 }}
+              />
+            </View>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text style={styles.title}>
+                {value?.title.length > 24
+                  ? value?.title.slice(0, 30) + "..."
+                  : value?.title}
+              </Text>
 
-          <View style={styles.footerItem}>
-            <Text style={styles.price}>
-              {value?.price} {value?.currency}
-            </Text>
+              <View style={styles.footerItem}>
+                <Text style={styles.price}>
+                  {value?.price} {value?.currency}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.addToWishlist}>
+              <Text>Water Every</Text>
+              <Text style={{
+                color: COLORS.primary,
+                fontSize: 20,
+                fontWeight: "bold"
+              }}>{
+                  value?.waterEvery ?
+                    (
+                      Number(value?.waterEvery) > 24 ?
+                        ((parseInt(value?.waterEvery / 24)).toString() + " Days") : ((parseInt(value?.waterEvery).toString()) + " Hr")
+                    ) :
+                    (
+                      <ActivityIndicator color={COLORS.primary} size={"small"} />
+                    )
+                }</Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.addToWishlist}>
-          <Text>Water Every</Text>
-          <Text style={{
-            color:COLORS.primary,
-            fontSize:20,
-            fontWeight:"bold"
-          }}>{
-              value?.waterEvery ? 
-               (
-                Number(value?.waterEvery) > 24 ? 
-            ((value?.waterEvery / 24) + " Days") : (value?.waterEvery+" Hr")
-               ) : 
-               (
-                <ActivityIndicator color={COLORS.primary} size={"small"} />
-               )
-            }</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-    ) : null
+        </TouchableOpacity>
+      ) : null
   );
 }
 
